@@ -813,7 +813,7 @@ tr:hover td { background: var(--hover-bg); }
     </div>
     <button class="btn btn-primary" onclick="handleLogin()" data-i18n="loginBtn">دخول</button>
     <div id="loginError" style="color:var(--danger);font-size:13px;margin-top:12px;display:none;" data-i18n="loginError">خطأ في اسم المستخدم أو كلمة المرور</div>
-    <div style="text-align:center;"><button class="topbar-lang" onclick="toggleLang()" id="loginLangBtn" style="margin-top:16px;">English</button></div>
+    <div style="text-align:center;"><button class="topbar-lang" onclick="toggleLang()" id="loginLangBtn" data-i18n="lang" style="margin-top:16px;">English</button></div>
   </div>
 </div>
 <!-- Dashboard -->
@@ -831,6 +831,12 @@ tr:hover td { background: var(--hover-bg); }
       <a class="nav-item" data-section="stations" onclick="showSection('stations')">
         <span class="icon">&#9617;</span> <span data-i18n="stations">المحطات</span>
       </a>
+      <a class="nav-item" data-section="reports" onclick="showSection('reports')">
+        <span class="icon">&#9776;</span> <span data-i18n="reports">التقارير</span>
+      </a>
+      <a class="nav-item" data-section="fuelorders" onclick="showSection('fuelorders')">
+        <span class="icon">&#9733;</span> <span data-i18n="fuelOrders">طلبات الوقود</span>
+      </a>
       <a class="nav-item" data-section="prices" onclick="showSection('prices')">
         <span class="icon">&#9733;</span> <span data-i18n="prices">إدارة الأسعار</span>
       </a>
@@ -842,12 +848,6 @@ tr:hover td { background: var(--hover-bg); }
       </a>
       <a class="nav-item" data-section="employees" onclick="showSection('employees')">
         <span class="icon">&#9783;</span> <span data-i18n="employees">الموظفون</span>
-      </a>
-      <a class="nav-item" data-section="reports" onclick="showSection('reports')">
-        <span class="icon">&#9776;</span> <span data-i18n="reports">التقارير</span>
-      </a>
-      <a class="nav-item" data-section="fuelorders" onclick="showSection('fuelorders')">
-        <span class="icon">&#9733;</span> <span data-i18n="fuelOrders">طلبات الوقود</span>
       </a>
       <a class="nav-item" data-section="activitylog" onclick="showSection('activitylog')">
         <span class="icon">&#9776;</span> <span data-i18n="activityLog">سجل الحركات</span>
@@ -1380,6 +1380,16 @@ const i18n = {
     adminDisp: 'مدير',
     noAccess: 'لا تملك صلاحية',
     search: 'بحث...',
+    productId: 'الرقم',
+    station: 'المحطة',
+    currency: 'ر.س',
+    editPriceTitle: 'تعديل سعر الوقود',
+    addPriceTitle: 'إضافة سعر وقود',
+    editEmpTitle: 'تعديل بيانات موظف',
+    addEmpTitle: 'إضافة موظف',
+    dailyReport: 'تقرير يومي',
+    capacity: 'السعة',
+    currentLevel: 'المستوى',
   },
   en: {
     title: 'axisco - Fuel Station Management System',
@@ -1547,6 +1557,16 @@ const i18n = {
     adminDisp: 'Admin',
     noAccess: 'No permission',
     search: 'Search...',
+    productId: 'ID',
+    station: 'Station',
+    currency: 'SAR',
+    editPriceTitle: 'Edit Fuel Price',
+    addPriceTitle: 'Add Fuel Price',
+    editEmpTitle: 'Edit Employee',
+    addEmpTitle: 'Add Employee',
+    dailyReport: 'Daily Report',
+    capacity: 'Capacity',
+    currentLevel: 'Level',
   }
 };
 
@@ -1777,6 +1797,7 @@ let data, stationIdCounter, priceIdCounter, tankIdCounter, saleIdCounter, empIdC
   fuelOrderIdCounter = (data.fuelOrders?.length || 0) + 1;
   readingIdCounter = (data.dailyReadings?.length || 0) + 1;
   initTheme();
+  autoLogin();
 })();
 
 // ====== SEARCH HELPERS ======
@@ -1802,6 +1823,7 @@ function addLog(action, details) {
 
 // ====== AUTH ======
 const CRED_KEY = 'axisco_creds';
+const SESSION_KEY = 'axisco_session';
 let currentUser = 'admin', currentRole = 'admin';
 function getCreds() {
   const raw = localStorage.getItem(CRED_KEY);
@@ -1813,6 +1835,26 @@ function requireAdmin() {
   if (!isAdmin()) { showToast(t('noAccess'), 'error'); return false; }
   return true;
 }
+function autoLogin() {
+  const raw = localStorage.getItem(SESSION_KEY);
+  if (!raw) return;
+  try {
+    const session = JSON.parse(raw);
+    if (session && session.user && session.role) {
+      currentUser = session.user;
+      currentRole = session.role;
+      document.getElementById('loginPage').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      const displayName = currentRole === 'admin' ? t('adminDisplay') : t('cashierDisplay');
+      document.getElementById('userDisplay').textContent = displayName;
+      document.getElementById('userAvatar').textContent = displayName.charAt(0);
+      document.getElementById('userRoleBadge').textContent = currentRole === 'admin' ? t('adminDisp') : t('cashierDisp');
+      updateSidebar();
+      translatePage();
+      initDashboard();
+    }
+  } catch(e) {}
+}
 function handleLogin(e) {
   if (e) e.preventDefault();
   const creds = getCreds();
@@ -1821,6 +1863,7 @@ function handleLogin(e) {
   if (user === creds.username && pass === creds.password) {
     currentUser = creds.username;
     currentRole = creds.role || 'admin';
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ user: currentUser, role: currentRole }));
     document.getElementById('loginPage').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
     const displayName = currentRole === 'admin' ? t('adminDisplay') : t('cashierDisplay');
@@ -1839,6 +1882,7 @@ function handleLogin(e) {
 }
 function handleLogout() {
   addLog('logout', `User ${currentUser} logged out`);
+  localStorage.removeItem(SESSION_KEY);
   document.getElementById('dashboard').style.display = 'none';
   document.getElementById('loginPage').style.display = 'flex';
   document.getElementById('loginUser').value = '';
@@ -2103,7 +2147,7 @@ function renderHomeReport() {
   const liters = filtered.reduce((sum, s) => sum + s.quantity, 0);
   const types = {};
   filtered.forEach(s => { types[s.fuelType] = (types[s.fuelType] || 0) + s.quantity; });
-  const curr = currentLang === 'ar' ? 'ر.س' : 'SAR';
+  const curr = t('currency');
   let breakdown = Object.entries(types).map(([k,v]) => `<tr><td>${tfuel(k)}</td><td>${v.toFixed(1)} ${t('liter')}</td></tr>`).join('');
   const station = data.stations.find(st => st.id === stationId);
   container.innerHTML = `
@@ -2150,7 +2194,7 @@ function renderHomeFuelOrders() {
   const delivered = filtered.filter(o => o.status === 'delivered').length;
   const rejected = filtered.filter(o => o.status === 'rejected').length;
   const totalQty = filtered.reduce((s, o) => s + o.quantity, 0);
-  const curr = currentLang === 'ar' ? 'ر.س' : 'SAR';
+  const curr = t('currency');
   let listHtml = '';
   [...filtered].reverse().forEach(o => {
     const station = data.stations.find(s => s.id === o.stationId);
@@ -2282,7 +2326,7 @@ function renderCharts() {
     const key = d.toDateString();
     const daySales = (data.sales || []).filter(s => new Date(s.date).toDateString() === key);
     const total = daySales.reduce((a,b) => a + (b.total || 0), 0);
-    const label = currentLang === 'ar' ? ['ح','ن','ث','ر','خ','ج','س'][d.getDay()] : d.toLocaleDateString('en',{weekday:'short'});
+    const label = t('daysShort')[d.getDay()];
     days.push(label); sales.push(total);
   }
   const maxSale = Math.max(...sales, 1);
@@ -2372,7 +2416,7 @@ function getStationHTML(stationId) {
   const timeStr = now.toTimeString().slice(0,5);
   const dayNames = t('days');
   const dayStr = dayNames[now.getDay()];
-  const title = currentLang === 'ar' ? 'تقرير يومي - محطة' : 'Daily Report - Station';
+  const title = t('dailyReport') + ' - ' + t('station');
   const dir = currentLang === 'ar' ? 'rtl' : 'ltr';
   const logoB64 = getLogoBase64();
   return `
@@ -2639,7 +2683,7 @@ function renderPrices() {
     const fuelClass = p.type.includes('بنزين') ? 'gasoline' : p.type === 'ديزل' ? 'diesel' : 'gas';
     tr.innerHTML = `
       <td><span class="fuel-badge ${fuelClass}">${tfuel(p.type)}</span></td>
-      <td><strong>${p.price.toFixed(2)} ${currentLang === 'ar' ? 'ر.س' : 'SAR'}</strong></td>
+      <td><strong>${p.price.toFixed(2)} ${t('currency')}</strong></td>
       <td>${new Date(p.updatedAt).toLocaleDateString(currentLang === 'ar' ? 'ar-SA' : 'en-US')}</td>
       <td><span style="color:var(--success);font-weight:600;">${p.status}</span></td>
       <td>
@@ -2654,7 +2698,7 @@ function renderPrices() {
 function openPriceModal(p) {
   if (!requireAdmin()) return;
   document.getElementById('priceEditId').value = p ? p.id : '';
-  document.getElementById('priceModalTitle').textContent = p ? 'تعديل سعر الوقود' : 'إضافة سعر وقود';
+  document.getElementById('priceModalTitle').textContent = p ? t('editPriceTitle') : t('addPriceTitle');
   if (p) {
     document.getElementById('priceFuelType').value = p.type;
     document.getElementById('priceValue').value = p.price;
@@ -2826,8 +2870,8 @@ function renderSales() {
       <td><strong>${station ? station.name : '-'}</strong></td>
       <td>${tfuel(s.fuelType)}</td>
       <td>${s.quantity}</td>
-      <td>${s.price.toFixed(2)} ${currentLang === 'ar' ? 'ر.س' : 'SAR'}</td>
-      <td><strong>${s.total.toFixed(2)} ${currentLang === 'ar' ? 'ر.س' : 'SAR'}</strong></td>
+      <td>${s.price.toFixed(2)} ${t('currency')}</td>
+      <td><strong>${s.total.toFixed(2)} ${t('currency')}</strong></td>
       <td>${s.employee}</td>
       <td><button class="btn btn-sm btn-outline" onclick="printInvoice(${s.id},'sale')">${t('printInvoice')}</button></td>
     `;
@@ -2836,7 +2880,7 @@ function renderSales() {
 }
 
 function openSaleModal() {
-  const curr = currentLang === 'ar' ? 'ر.س' : 'SAR';
+  const curr = t('currency');
   const stationSelect = document.getElementById('saleStation');
   stationSelect.innerHTML = '';
   data.stations.forEach(s => {
@@ -2873,7 +2917,7 @@ function saveSale() {
   const employee = document.getElementById('saleEmployee').value;
   const priceItem = data.prices.find(p => p.type === fuelType);
   if (!fuelType || isNaN(quantity) || quantity <= 0 || !employee || !stationId) {
-    showToast('الرجاء إدخال بيانات صحيحة', 'error');
+    showToast(t('toastValid'), 'error');
     return;
   }
   const price = priceItem ? priceItem.price : 0;
@@ -2934,7 +2978,7 @@ function renderEmployees() {
 function openEmployeeModal(e) {
   if (!requireAdmin()) return;
   document.getElementById('empEditId').value = e ? e.id : '';
-  document.getElementById('employeeModalTitle').textContent = e ? 'تعديل بيانات موظف' : 'إضافة موظف';
+  document.getElementById('employeeModalTitle').textContent = e ? t('editEmpTitle') : t('addEmpTitle');
   if (e) {
     document.getElementById('empName').value = e.name;
     document.getElementById('empRole').value = e.role;
@@ -3001,7 +3045,7 @@ function generateReport(type) {
   const liters = filtered.reduce((sum, s) => sum + s.quantity, 0);
   const types = {};
   filtered.forEach(s => { types[s.fuelType] = (types[s.fuelType] || 0) + s.quantity; });
-  const curr = currentLang === 'ar' ? 'ر.س' : 'SAR';
+  const curr = t('currency');
   let breakdown = Object.entries(types).map(([k,v]) => `<tr><td>${tfuel(k)}</td><td>${v.toFixed(1)} ${t('liter')}</td></tr>`).join('');
 
   document.getElementById('reportResult').innerHTML = `
@@ -3040,8 +3084,8 @@ function renderSettings() {
         <select onchange="updateStationTank(${t.id},'fuelType',this.value)">
           ${['بنزين 91','بنزين 95','ديزل'].map(ft => `<option value="${ft}" ${t.fuelType === ft ? 'selected' : ''}>${tfuel(ft)}</option>`).join('')}
         </select>
-        <input type="number" value="${t.capacity}" placeholder="سعة" style="width:80px;" onchange="updateStationTank(${t.id},'capacity',this.value)">
-        <input type="number" value="${t.level}" placeholder="مستوى" style="width:80px;" onchange="updateStationTank(${t.id},'level',this.value)">
+        <input type="number" value="${t.capacity}" placeholder="${t('capacity')}" style="width:80px;" onchange="updateStationTank(${t.id},'capacity',this.value)">
+        <input type="number" value="${t.level}" placeholder="${t('currentLevel')}" style="width:80px;" onchange="updateStationTank(${t.id},'level',this.value)">
         <button class="btn btn-sm btn-danger" onclick="deleteStationTank(${t.id})">&#10005;</button>
       </div>
     `).join('');
@@ -3053,7 +3097,7 @@ function renderSettings() {
             <span style="font-size:12px;color:var(--text-muted);margin-right:8px;">${s.location}</span>
           </div>
           <div>
-            <button class="btn btn-sm btn-outline" onclick="addStationTank(${s.id})">+ خزان</button>
+            <button class="btn btn-sm btn-outline" onclick="addStationTank(${s.id})">${t('addTank')}</button>
             <button class="btn btn-sm btn-danger" onclick="deleteStation(${s.id})">${t('deleteStation')}</button>
           </div>
         </div>
