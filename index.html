@@ -1190,9 +1190,9 @@ tr:hover td { background: var(--hover-bg); }
     <div class="form-group">
       <label data-i18n="fuelType">نوع الوقود</label>
       <select id="reqFuelType" style="width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;">
-        <option value="بنزين 91">بنزين 91</option>
-        <option value="بنزين 95">بنزين 95</option>
-        <option value="ديزل">ديزل</option>
+        <option value="بنزين 91" data-i18n="fuel91">بنزين 91</option>
+        <option value="بنزين 95" data-i18n="fuel95">بنزين 95</option>
+        <option value="ديزل" data-i18n="diesel">ديزل</option>
       </select>
     </div>
     <div class="form-group">
@@ -1605,6 +1605,20 @@ function setLang(lang) {
   document.getElementById('topbarLangBtn').textContent = t('lang');
   document.title = t('title');
   translatePage();
+  // Re-render current section with new language
+  const activeSection = document.querySelector('.section.active');
+  if (activeSection) {
+    const name = activeSection.id.replace('section-', '');
+    if (name === 'home') renderHome();
+    else if (name === 'fuelorders') renderFuelOrders();
+    else if (name === 'settings') renderSettings();
+    else if (name === 'activitylog') renderActivityLog();
+    else if (name === 'stations' && typeof renderStations === 'function') renderStations();
+    else if (name === 'tanks' && typeof renderTanks === 'function') renderTanks();
+    else if (name === 'prices' && typeof renderPrices === 'function') renderPrices();
+    else if (name === 'sales' && typeof renderSales === 'function') renderSales();
+    else if (name === 'employees' && typeof renderEmployees === 'function') renderEmployees();
+  }
   updateDate();
   if (document.getElementById('dashboard').style.display === 'block') renderAll();
 }
@@ -2251,7 +2265,7 @@ function renderLowTankAlerts() {
   const bar = document.createElement('div'); bar.className = 'alert-bar';
   lowTanks.forEach(tk => {
     const s = data.stations.find(st => st.id === tk.stationId);
-    bar.innerHTML += `<div class="alert-item">${t('lowTank')} ${s ? s.name : '?'} / ${tk.fuelType} (${Math.round(tk.level/tk.capacity*100)}%)</div>`;
+    bar.innerHTML += `<div class="alert-item">${t('lowTank')} ${s ? s.name : '?'} / ${tfuel(tk.fuelType)} (${Math.round(tk.level/tk.capacity*100)}%)</div>`;
   });
   container.before(bar);
 }
@@ -2329,7 +2343,7 @@ function printInvoice(id, type) {
     <h2>axisco</h2>
     <div class="meta">${new Date(item.date).toLocaleString(currentLang === 'ar' ? 'ar-SA' : 'en-US')}</div>
     <table><tr><th>${t('productId')}</th><th>${t('station')}</th><th>${t('fuelType')}</th><th>${t('quantity')}</th><th>${t('sumCol')}</th></tr>
-    <tr><td>#${item.id}</td><td>${(data.stations.find(s=>s.id===item.stationId)||{}).name||'?'}</td><td>${item.fuelType||item.type||'?'}</td><td>${item.quantity||item.amount||0}</td><td>${item.total||item.price||0}</td></tr></table>
+    <tr><td>#${item.id}</td><td>${(data.stations.find(s=>s.id===item.stationId)||{}).name||'?'}</td><td>${tfuel(item.fuelType||item.type||'?')}</td><td>${item.quantity||item.amount||0}</td><td>${item.total||item.price||0}</td></tr></table>
     <div class="total">${t('sumCol')}: ${(item.total||item.price||0).toLocaleString()}</div>
   </div><script>window.print();<\/script></body></html>`);
   w.document.close();
@@ -2712,7 +2726,7 @@ function renderTanks() {
       const card = document.createElement('div');
       card.className = 'tank-card';
       card.innerHTML = `
-        <h4>${tk.name}</h4>
+        <h4>${tfuel(tk.name)}</h4>
         <div class="tank-bar">
           <div class="tank-fill ${fuelClass}" style="height:${pct}%"></div>
         </div>
@@ -2836,7 +2850,7 @@ function openSaleModal() {
   data.prices.forEach(p => {
     const opt = document.createElement('option');
     opt.value = p.type;
-    opt.textContent = p.type + ' - ' + p.price.toFixed(2) + ' ' + curr;
+    opt.textContent = tfuel(p.type) + ' - ' + p.price.toFixed(2) + ' ' + curr;
     opt.dataset.price = p.price;
     fuelSelect.appendChild(opt);
   });
@@ -2988,7 +3002,7 @@ function generateReport(type) {
   const types = {};
   filtered.forEach(s => { types[s.fuelType] = (types[s.fuelType] || 0) + s.quantity; });
   const curr = currentLang === 'ar' ? 'ر.س' : 'SAR';
-  let breakdown = Object.entries(types).map(([k,v]) => `<tr><td>${k}</td><td>${v.toFixed(1)} ${t('liter')}</td></tr>`).join('');
+  let breakdown = Object.entries(types).map(([k,v]) => `<tr><td>${tfuel(k)}</td><td>${v.toFixed(1)} ${t('liter')}</td></tr>`).join('');
 
   document.getElementById('reportResult').innerHTML = `
     <div class="chart-placeholder">
@@ -3024,7 +3038,7 @@ function renderSettings() {
     let tanksHtml = stationTanks.map((t, i) => `
       <div class="settings-tank-row">
         <select onchange="updateStationTank(${t.id},'fuelType',this.value)">
-          ${['بنزين 91','بنزين 95','ديزل'].map(ft => `<option value="${ft}" ${t.fuelType === ft ? 'selected' : ''}>${ft}</option>`).join('')}
+          ${['بنزين 91','بنزين 95','ديزل'].map(ft => `<option value="${ft}" ${t.fuelType === ft ? 'selected' : ''}>${tfuel(ft)}</option>`).join('')}
         </select>
         <input type="number" value="${t.capacity}" placeholder="سعة" style="width:80px;" onchange="updateStationTank(${t.id},'capacity',this.value)">
         <input type="number" value="${t.level}" placeholder="مستوى" style="width:80px;" onchange="updateStationTank(${t.id},'level',this.value)">
