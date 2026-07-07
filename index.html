@@ -1994,7 +1994,10 @@ function renderHome() {
     <div class="item"><div class="val">${todayR.length}</div><div class="lbl">${t('todayReadings')}</div></div>
   `;
   // Quick access cards
+  const oldQa = document.querySelector('.qa-cards');
+  if (oldQa) oldQa.remove();
   const qa = document.createElement('div');
+  qa.className = 'qa-cards';
   qa.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;';
   qa.innerHTML = `
     <div class="chart-card" style="cursor:pointer;text-align:center;padding:16px;" onclick="showSection('stations')">
@@ -2321,7 +2324,7 @@ function saveReading(stationId, silent) {
 function renderLowTankAlerts() {
   const container = document.getElementById('stationReadings');
   if (!container) return;
-  const existing = container.querySelector('.alert-bar');
+  const existing = document.querySelector('.alert-bar');
   if (existing) existing.remove();
   const lowTanks = (data.tanks || []).filter(t => t.level / t.capacity < 0.2);
   const okTanks = (data.tanks || []).filter(t => t.level / t.capacity >= 0.2);
@@ -2341,7 +2344,7 @@ function renderLowTankAlerts() {
 function renderCharts() {
   const container = document.getElementById('stationReadings');
   if (!container) return;
-  const existing = container.querySelector('.chart-grid');
+  const existing = document.querySelector('.chart-grid');
   if (existing) existing.remove();
   // Daily sales (last 7 days)
   const days = []; const sales = [];
