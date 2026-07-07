@@ -760,7 +760,7 @@ tr:hover td { background: var(--hover-bg); }
   box-shadow:0 1px 3px rgba(0,0,0,0.06);
 }
 .chart-card h3 { font-size:15px; margin-bottom:16px; color:var(--primary); }
-.bar-chart { display:flex; align-items:end; gap:8px; height:120px; padding:0 4px; }
+.bar-chart { display:flex; align-items:end; gap:8px; height:120px; padding:0 4px; flex-direction:row; }
 .bar-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
 .bar {
   width:100%; min-height:4px; border-radius:4px 4px 0 0;
@@ -1625,6 +1625,12 @@ function setLang(lang) {
   document.getElementById('topbarLangBtn').textContent = t('lang');
   document.title = t('title');
   translatePage();
+  // Update user display on lang change
+  const displayName = currentRole === 'admin' ? t('adminDisplay') : t('cashierDisplay');
+  const userDisp = document.getElementById('userDisplay');
+  if (userDisp) userDisp.textContent = displayName;
+  const roleBadge = document.getElementById('userRoleBadge');
+  if (roleBadge) roleBadge.textContent = currentRole === 'admin' ? t('adminDisp') : t('cashierDisp');
   // Re-render current section with new language
   const activeSection = document.querySelector('.section.active');
   if (activeSection) {
@@ -1920,8 +1926,9 @@ function initDashboard() {
 
 function updateDate() {
   const now = new Date();
-  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-  document.getElementById('currentDate').textContent = now.toLocaleDateString(currentLang === 'ar' ? 'ar-SA' : 'en-US', options);
+  const dOpts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  const tOpts = { hour: '2-digit', minute: '2-digit' };
+  document.getElementById('currentDate').textContent = now.toLocaleDateString(currentLang === 'ar' ? 'ar-SA' : 'en-US', dOpts) + ' ' + now.toLocaleTimeString(currentLang === 'ar' ? 'ar-SA' : 'en-US', tOpts);
 }
 
 // ====== SECTIONS ======
@@ -1986,6 +1993,23 @@ function renderHome() {
     <div class="item"><div class="val">${data.tanks.length}</div><div class="lbl">${t('totalTanks')}</div></div>
     <div class="item"><div class="val">${todayR.length}</div><div class="lbl">${t('todayReadings')}</div></div>
   `;
+  // Quick access cards
+  const qa = document.createElement('div');
+  qa.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;';
+  qa.innerHTML = `
+    <div class="chart-card" style="cursor:pointer;text-align:center;padding:16px;" onclick="showSection('stations')">
+      <div style="font-size:32px;">&#9617;</div>
+      <div style="font-weight:700;font-size:15px;margin-top:4px;">${t('stations')}</div>
+    </div>
+    <div class="chart-card" style="cursor:pointer;text-align:center;padding:16px;" onclick="showSection('reports')">
+      <div style="font-size:32px;">&#9776;</div>
+      <div style="font-weight:700;font-size:15px;margin-top:4px;">${t('reports')}</div>
+    </div>
+    <div class="chart-card" style="cursor:pointer;text-align:center;padding:16px;" onclick="showSection('fuelorders')">
+      <div style="font-size:32px;">&#9733;</div>
+      <div style="font-weight:700;font-size:15px;margin-top:4px;">${t('fuelOrders')}</div>
+    </div>`;
+  summary.parentNode.insertBefore(qa, summary.nextSibling);
   renderLowTankAlerts();
   renderCharts();
   // Station selector
@@ -2351,7 +2375,7 @@ function renderActivityLog() {
   if (!logs.length) { list.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);">${t('noData')}</div>`; return; }
   list.innerHTML = logs.map(l => `
     <div class="log-item">
-      <span class="log-time">${new Date(l.ts).toLocaleString(currentLang === 'ar' ? 'ar-SA' : 'en-US')}</span>
+      <span class="log-time">${new Date(l.ts).toLocaleString(currentLang === 'ar' ? 'ar-SA' : 'en-US', { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}</span>
       <span class="log-user">${l.user || '?'}</span>
       <span class="log-action">${l.action}</span>
       <span class="log-details">${l.details || ''}</span>
@@ -2385,7 +2409,7 @@ function printInvoice(id, type) {
     .total{font-size:18px;font-weight:700;text-align:center;margin-top:12px;}
   </style></head><body><div class="invoice">
     <h2>axisco</h2>
-    <div class="meta">${new Date(item.date).toLocaleString(currentLang === 'ar' ? 'ar-SA' : 'en-US')}</div>
+    <div class="meta">${new Date(item.date).toLocaleString(currentLang === 'ar' ? 'ar-SA' : 'en-US', { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}</div>
     <table><tr><th>${t('productId')}</th><th>${t('station')}</th><th>${t('fuelType')}</th><th>${t('quantity')}</th><th>${t('sumCol')}</th></tr>
     <tr><td>#${item.id}</td><td>${(data.stations.find(s=>s.id===item.stationId)||{}).name||'?'}</td><td>${tfuel(item.fuelType||item.type||'?')}</td><td>${item.quantity||item.amount||0}</td><td>${item.total||item.price||0}</td></tr></table>
     <div class="total">${t('sumCol')}: ${(item.total||item.price||0).toLocaleString()}</div>
@@ -2412,7 +2436,7 @@ function getStationHTML(stationId) {
     rows += `<tr><td>${tfuel(t.name)}</td><td>${cap.toLocaleString()}</td><td>${rem.toLocaleString()}</td><td>${sold.toLocaleString()}</td><td>${tot.toLocaleString()}</td></tr>`;
   });
   const now = new Date();
-  const dateStr = now.toLocaleDateString(currentLang === 'ar' ? 'ar-SA' : 'en-US');
+  const dateStr = now.toLocaleDateString(currentLang === 'ar' ? 'ar-SA' : 'en-US', { weekday:'short', year:'numeric', month:'short', day:'numeric' });
   const timeStr = now.toTimeString().slice(0,5);
   const dayNames = t('days');
   const dayStr = dayNames[now.getDay()];
@@ -2658,7 +2682,7 @@ function renderFuelOrders() {
         <div class="employee-avatar" style="background:var(--primary);">&#9733;</div>
         <div>
           <div class="employee-name">${station ? station.name : '-'} - ${tfuel(o.fuelType)}</div>
-          <div class="employee-role">${o.quantity.toLocaleString()}L | ${new Date(o.date).toLocaleDateString(currentLang === 'ar' ? 'ar-SA' : 'en-US')}</div>
+          <div class="employee-role">${o.quantity.toLocaleString()}L | ${new Date(o.date).toLocaleDateString(currentLang === 'ar' ? 'ar-SA' : 'en-US', { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}</div>
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:12px;">
