@@ -1,0 +1,20 @@
+{
+  "name": "axisco - نظام إدارة محطات الوقود",
+  "short_name": "axisco",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#FFF5EB",
+  "theme_color": "#F18904",
+  "icons": [
+    {
+      "src": "axisco-logo.jpeg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "axisco-logo.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
