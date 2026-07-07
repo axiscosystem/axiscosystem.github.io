@@ -713,11 +713,53 @@ tr:hover td { background: var(--hover-bg); }
   .settings-tank-row { flex-direction: column; align-items: stretch; }
   .settings-tank-row input, .settings-tank-row select { width: 100%; }
 }
+/* Login */
+.login-page {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg) url('axisco-bg.jpeg') center/cover fixed no-repeat;
+  z-index: 999;
+}
+.login-page::before {
+  content: ''; position: fixed; inset: 0;
+  background: var(--overlay); z-index: -1;
+}
+.login-box {
+  background: var(--card);
+  border-radius: 24px;
+  padding: 40px 32px;
+  width: 380px;
+  max-width: 90%;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+  text-align: center;
+  animation: modalIn 0.3s ease-out;
+}
+.login-box h2 { font-size: 18px; color: var(--primary); margin-bottom: 24px; }
+.login-box .btn { width: 100%; margin-top: 8px; }
+.login-box input { width: 100%; }
 </style>
 </head>
 <body>
+<!-- Login Page -->
+<div class="login-page" id="loginPage">
+  <div class="login-box">
+    <img src="axisco-logo.jpeg" alt="axisco" style="width:100%;max-width:160px;display:block;margin:0 auto 20px;border-radius:12px;">
+    <h2 data-i18n="loginSub">نظام إدارة المحطات</h2>
+    <div class="form-group">
+      <label data-i18n="username">اسم المستخدم</label>
+      <input type="text" id="loginUser" placeholder="admin" style="text-align:center;">
+    </div>
+    <div class="form-group">
+      <label data-i18n="password">كلمة المرور</label>
+      <input type="password" id="loginPass" placeholder="••••••" style="text-align:center;" onkeydown="if(event.key==='Enter')handleLogin()">
+    </div>
+    <button class="btn btn-primary" onclick="handleLogin()" data-i18n="loginBtn">دخول</button>
+    <div id="loginError" style="color:var(--danger);font-size:13px;margin-top:12px;display:none;" data-i18n="loginError">خطأ في اسم المستخدم أو كلمة المرور</div>
+    <div style="text-align:center;"><button class="topbar-lang" onclick="toggleLang()" id="loginLangBtn" style="margin-top:16px;">English</button></div>
+  </div>
+</div>
 <!-- Dashboard -->
-<div class="dashboard" id="dashboard">
+<div class="dashboard" id="dashboard" style="display:none;">
   <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
@@ -910,6 +952,16 @@ tr:hover td { background: var(--hover-bg); }
           <button class="btn btn-accent btn-sm" onclick="openStationModal()" data-i18n="addStation">+ إضافة محطة</button>
         </div>
         <div id="settingsStationList"></div>
+      </div>
+      <div class="settings-section" style="margin-top:16px;">
+        <div class="section-header" style="margin-top:0;">
+          <h3 style="font-size:16px;color:var(--primary);" data-i18n="changePassword">تغيير كلمة المرور</h3>
+        </div>
+        <div class="settings-tank-row">
+          <input type="text" id="changeUser" placeholder="اسم المستخدم" style="width:200px;">
+          <input type="password" id="changePass" placeholder="كلمة المرور الجديدة" style="width:200px;">
+          <button class="btn btn-sm btn-primary" onclick="saveNewPassword()" data-i18n="save">حفظ</button>
+        </div>
       </div>
     </div>
 
@@ -1233,6 +1285,8 @@ const i18n = {
     stationAdded: 'تم إضافة المحطة',
     stationUpdated: 'تم تحديث المحطة',
     stationDeleted: 'تم حذف المحطة',
+    changePassword: 'تغيير كلمة المرور',
+    passwordChanged: 'تم تغيير كلمة المرور',
   },
   en: {
     title: 'axisco - Fuel Station Management System',
@@ -1385,6 +1439,8 @@ const i18n = {
     stationAdded: 'Station added',
     stationUpdated: 'Station updated',
     stationDeleted: 'Station deleted',
+    changePassword: 'Change Password',
+    passwordChanged: 'Password changed',
   }
 };
 
@@ -1600,23 +1656,48 @@ let data, stationIdCounter, priceIdCounter, tankIdCounter, saleIdCounter, empIdC
   fuelOrderIdCounter = (data.fuelOrders?.length || 0) + 1;
   readingIdCounter = (data.dailyReadings?.length || 0) + 1;
   initTheme();
-  handleLogin();
 })();
 
 // ====== AUTH ======
+const CRED_KEY = 'axisco_creds';
+function getCreds() {
+  const raw = localStorage.getItem(CRED_KEY);
+  if (raw) try { return JSON.parse(raw); } catch(e) {}
+  return { username: 'admin', password: 'admin' };
+}
 function handleLogin(e) {
   if (e) e.preventDefault();
-  document.getElementById('dashboard').style.display = 'block';
-  document.getElementById('userDisplay').textContent = t('adminDisplay');
-  document.getElementById('userAvatar').textContent = t('adminDisplay').charAt(0);
-  translatePage();
-  initDashboard();
+  const creds = getCreds();
+  const user = document.getElementById('loginUser').value.trim() || 'admin';
+  const pass = document.getElementById('loginPass').value || 'admin';
+  if (user === creds.username && pass === creds.password) {
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('userDisplay').textContent = t('adminDisplay');
+    document.getElementById('userAvatar').textContent = t('adminDisplay').charAt(0);
+    translatePage();
+    initDashboard();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+    document.getElementById('loginPass').value = '';
+  }
   return false;
 }
-
 function handleLogout() {
-  localStorage.removeItem(STORE_KEY);
-  location.reload();
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginError').style.display = 'none';
+}
+function saveNewPassword() {
+  const user = document.getElementById('changeUser').value.trim();
+  const pass = document.getElementById('changePass').value;
+  if (!user || !pass) { showToast(t('toastValid'), 'error'); return; }
+  localStorage.setItem(CRED_KEY, JSON.stringify({ username: user, password: pass }));
+  document.getElementById('changeUser').value = '';
+  document.getElementById('changePass').value = '';
+  showToast(t('passwordChanged'), 'success');
 }
 
 // ====== DASHBOARD INIT ======
