@@ -668,6 +668,51 @@ tr:hover td { background: var(--hover-bg); }
   .reading-table { font-size: 12px; }
   .reading-table td input { max-width: 80px; min-width: 50px; font-size: 12px; }
 }
+/* Settings */
+.settings-section {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.settings-station {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+.settings-station-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.settings-tank-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  flex-wrap: wrap;
+}
+.settings-tank-row input,
+.settings-tank-row select {
+  padding: 6px 10px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+}
+.settings-tank-row input:focus,
+.settings-tank-row select:focus {
+  border-color: var(--accent);
+}
+.settings-tank-row .btn-sm { padding: 4px 10px; font-size: 11px; }
+@media (max-width: 480px) {
+  .settings-section { padding: 16px; }
+  .settings-tank-row { flex-direction: column; align-items: stretch; }
+  .settings-tank-row input, .settings-tank-row select { width: 100%; }
+}
 </style>
 </head>
 <body>
@@ -703,6 +748,9 @@ tr:hover td { background: var(--hover-bg); }
       </a>
       <a class="nav-item" data-section="fuelorders" onclick="showSection('fuelorders')">
         <span class="icon">&#9733;</span> <span data-i18n="fuelOrders">طلبات الوقود</span>
+      </a>
+      <a class="nav-item" data-section="settings" onclick="showSection('settings')">
+        <span class="icon">&#9881;</span> <span data-i18n="settings">الإعدادات</span>
       </a>
     </nav>
     <div class="sidebar-footer">
@@ -851,6 +899,20 @@ tr:hover td { background: var(--hover-bg); }
       <div id="fuelOrdersList"></div>
     </div>
 
+    <!-- Settings Section -->
+    <div class="section" id="section-settings">
+      <div class="section-header">
+        <h2 data-i18n="settings">الإعدادات</h2>
+      </div>
+      <div class="settings-section">
+        <div class="section-header" style="margin-top:0;">
+          <h3 style="font-size:16px;color:var(--primary);" data-i18n="stationMgmt">إدارة المحطات</h3>
+          <button class="btn btn-accent btn-sm" onclick="openStationModal()" data-i18n="addStation">+ إضافة محطة</button>
+        </div>
+        <div id="settingsStationList"></div>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -962,6 +1024,25 @@ tr:hover td { background: var(--hover-bg); }
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="closeModal('employeeModal')" data-i18n="cancel">إلغاء</button>
       <button class="btn btn-primary" onclick="saveEmployee()" data-i18n="save">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Station Modal -->
+<div class="modal-overlay" id="stationModalOverlay">
+  <div class="modal">
+    <h3 id="stationModalTitle" data-i18n="addStation">إضافة محطة</h3>
+    <div class="form-group">
+      <label data-i18n="stationNameEn">اسم المحطة</label>
+      <input type="text" id="stationNameInput" placeholder="مثال: Jeddah">
+    </div>
+    <div class="form-group">
+      <label data-i18n="stationLocation">الموقع</label>
+      <input type="text" id="stationLocInput" placeholder="مثال: جدة">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeStationModal()" data-i18n="cancel">إلغاء</button>
+      <button class="btn btn-primary" onclick="saveStation()" data-i18n="save">حفظ</button>
     </div>
   </div>
 </div>
@@ -1140,6 +1221,18 @@ const i18n = {
     dataImported: 'تم استيراد البيانات بنجاح',
     importInvalid: 'الملف غير صالح',
     reportGenerated: 'تم إنشاء التقرير',
+    settings: 'الإعدادات',
+    stationMgmt: 'إدارة المحطات',
+    addStation: 'إضافة محطة',
+    editStation: 'تعديل المحطة',
+    stationNameAr: 'اسم المحطة (عربي)',
+    stationNameEn: 'اسم المحطة (إنجليزي)',
+    stationLocation: 'الموقع',
+    deleteStation: 'حذف المحطة',
+    confirmDeleteStation: 'هل أنت متأكد من حذف المحطة',
+    stationAdded: 'تم إضافة المحطة',
+    stationUpdated: 'تم تحديث المحطة',
+    stationDeleted: 'تم حذف المحطة',
   },
   en: {
     title: 'axisco - Fuel Station Management System',
@@ -1280,6 +1373,18 @@ const i18n = {
     dataImported: 'Data imported successfully',
     importInvalid: 'Invalid file',
     reportGenerated: 'Report generated',
+    settings: 'Settings',
+    stationMgmt: 'Station Management',
+    addStation: 'Add Station',
+    editStation: 'Edit Station',
+    stationNameAr: 'Station Name (Arabic)',
+    stationNameEn: 'Station Name (English)',
+    stationLocation: 'Location',
+    deleteStation: 'Delete Station',
+    confirmDeleteStation: 'Are you sure you want to delete station',
+    stationAdded: 'Station added',
+    stationUpdated: 'Station updated',
+    stationDeleted: 'Station deleted',
   }
 };
 
@@ -1534,11 +1639,15 @@ function updateDate() {
 function showSection(name) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('section-' + name).classList.add('active');
-  document.querySelector(`.nav-item[data-section="${name}"]`).classList.add('active');
+  const section = document.getElementById('section-' + name);
+  if (section) section.classList.add('active');
+  const navItem = document.querySelector(`.nav-item[data-section="${name}"]`);
+  if (navItem) navItem.classList.add('active');
   document.getElementById('sidebar').classList.remove('open');
   if (name === 'home') renderHome();
   if (name === 'fuelorders') renderFuelOrders();
+  if (name === 'settings') renderSettings();
+  if (name === 'stations' && typeof renderStations === 'function') renderStations();
 }
 
 function toggleSidebar() {
@@ -2543,6 +2652,106 @@ function generateReport(type) {
     </div>
   `;
   showToast(t('reportGenerated'), 'success');
+}
+/* ==== SETTINGS - STATION/TANK MANAGEMENT ==== */
+function renderSettings() {
+  const container = document.getElementById('settingsStationList');
+  let html = '';
+  data.stations.forEach(s => {
+    const stationTanks = data.tanks.filter(t => t.stationId === s.id);
+    let tanksHtml = stationTanks.map((t, i) => `
+      <div class="settings-tank-row">
+        <select onchange="updateStationTank(${t.id},'fuelType',this.value)">
+          ${['بنزين 91','بنزين 95','ديزل'].map(ft => `<option value="${ft}" ${t.fuelType === ft ? 'selected' : ''}>${ft}</option>`).join('')}
+        </select>
+        <input type="number" value="${t.capacity}" placeholder="سعة" style="width:80px;" onchange="updateStationTank(${t.id},'capacity',this.value)">
+        <input type="number" value="${t.level}" placeholder="مستوى" style="width:80px;" onchange="updateStationTank(${t.id},'level',this.value)">
+        <button class="btn btn-sm btn-danger" onclick="deleteStationTank(${t.id})">&#10005;</button>
+      </div>
+    `).join('');
+    html += `
+      <div class="settings-station" data-station-id="${s.id}">
+        <div class="settings-station-header">
+          <div>
+            <strong>${s.id}. ${s.name}</strong>
+            <span style="font-size:12px;color:var(--text-muted);margin-right:8px;">${s.location}</span>
+          </div>
+          <div>
+            <button class="btn btn-sm btn-outline" onclick="addStationTank(${s.id})">+ خزان</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteStation(${s.id})">${t('deleteStation')}</button>
+          </div>
+        </div>
+        <div class="settings-tanks">${tanksHtml}</div>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+function updateStationTank(tankId, field, value) {
+  const tank = data.tanks.find(t => t.id === tankId);
+  if (!tank) return;
+  if (field === 'capacity' || field === 'level') tank[field] = parseFloat(value) || 0;
+  else tank[field] = value;
+  if (field === 'fuelType') tank.name = value;
+  saveData(data);
+}
+function addStationTank(stationId) {
+  const maxId = data.tanks.length > 0 ? Math.max(...data.tanks.map(t => t.id)) : 0;
+  const ft = 'بنزين 91';
+  data.tanks.push({ id: maxId + 1, name: ft, stationId, fuelType: ft, capacity: 50000, level: 25000 });
+  saveData(data);
+  renderSettings();
+}
+function deleteStationTank(tankId) {
+  data.tanks = data.tanks.filter(t => t.id !== tankId);
+  saveData(data);
+  renderSettings();
+}
+function openStationModal(editId) {
+  const s = editId ? data.stations.find(x => x.id === editId) : null;
+  document.getElementById('stationModalTitle').textContent = t(s ? 'editStation' : 'addStation');
+  document.getElementById('stationNameInput').value = s ? s.name : '';
+  document.getElementById('stationLocInput').value = s ? (s.location || '') : '';
+  document.getElementById('stationModalOverlay').classList.add('show');
+  document.getElementById('stationModalOverlay').dataset.editId = editId || '';
+}
+function saveStation() {
+  const name = document.getElementById('stationNameInput').value.trim();
+  const location = document.getElementById('stationLocInput').value.trim();
+  if (!name) { showToast(t('toastValid'), 'error'); return; }
+  const editId = document.getElementById('stationModalOverlay').dataset.editId;
+  if (editId) {
+    const s = data.stations.find(x => x.id === parseInt(editId));
+    if (s) { s.name = name; s.location = location; }
+    showToast(t('stationUpdated'), 'success');
+  } else {
+    const newId = data.stations.length > 0 ? Math.max(...data.stations.map(x => x.id)) + 1 : 1;
+    data.stations.push({ id: newId, name, location, status: 'active' });
+    ['بنزين 91','بنزين 95','ديزل'].forEach((ft, i) => {
+      const maxId = data.tanks.length > 0 ? Math.max(...data.tanks.map(t => t.id)) : 0;
+      data.tanks.push({ id: maxId + 1 + i, name: ft, stationId: newId, fuelType: ft, capacity: [50000,40000,60000][i], level: [30000,20000,40000][i] });
+    });
+    showToast(t('stationAdded'), 'success');
+  }
+  saveData(data);
+  closeStationModal();
+  renderSettings();
+  if (typeof renderStations === 'function') renderStations();
+}
+function closeStationModal() {
+  document.getElementById('stationModalOverlay').classList.remove('show');
+}
+function deleteStation(stationId) {
+  if (!confirm(t('confirmDeleteStation') + ' ' + stationId + '?')) return;
+  data.stations = data.stations.filter(s => s.id !== stationId);
+  data.tanks = data.tanks.filter(t => t.stationId !== stationId);
+  data.sales = data.sales.filter(s => s.stationId !== stationId);
+  data.dailyReadings = (data.dailyReadings || []).filter(r => r.stationId !== stationId);
+  saveData(data);
+  renderSettings();
+  if (typeof renderStations === 'function') renderStations();
+  if (typeof renderHome === 'function') renderHome();
+  showToast(t('stationDeleted'), 'success');
 }
 /* ==== DATA EXPORT/IMPORT ==== */
 function exportData() {
