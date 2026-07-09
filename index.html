@@ -1170,7 +1170,7 @@ tr:hover td { background: var(--hover-bg); }
             <button class="btn btn-sm btn-outline" onclick="syncFromCloud()">📥 سحب من السحابة</button>
             <span id="cloudStatus" style="font-size:12px;color:var(--text-muted);margin-right:8px;"></span>
           </div>
-          <div style="font-size:11px;color:var(--text-muted);margin-top:4px;" data-i18n="cloudHint">مثال: https://my-project.firebaseio.com/data.json — مجاني عبر Firebase</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:4px;" data-i18n="cloudHint">تم ربط قاعدة بيانات سحابية مجانية — بياناتك محفوظة تلقائياً (يمكنك تغيير الرابط أعلاه)</div>
         </div>
       </div>
 
@@ -1853,7 +1853,7 @@ const i18n = {
     tankCurrent: 'Current Level',
     toastBulkSent: 'Fuel requests sent successfully',
     // Cloud
-    cloudHint: 'e.g. https://my-project.firebaseio.com/data.json — Free via Firebase',
+    cloudHint: 'Free cloud database connected — your data is auto-synced (you can change the URL above)',
     // Titles
     exportTooltip: 'Export Data',
     importTooltip: 'Import Data',
@@ -2129,7 +2129,8 @@ function ensureTanks(d) {
 
 let serverTimer = null;
 // Cloud config
-let cloudURL = localStorage.getItem('axisco_cloud_url') || '';
+const DEFAULT_CLOUD_URL = 'https://jsonblob.com/api/jsonBlob/019f4682-1fa5-720b-8397-1118aad4facc';
+let cloudURL = localStorage.getItem('axisco_cloud_url') || DEFAULT_CLOUD_URL;
 let cloudKey = localStorage.getItem('axisco_cloud_key') || '';
 function setCloudConfig(url, key) {
   cloudURL = url; cloudKey = key;
@@ -4075,7 +4076,7 @@ function generateReport(type) {
 }
 /* ==== SETTINGS - STATION/TANK MANAGEMENT ==== */
 function renderSettings() {
-  document.getElementById('cloudURL').value = cloudURL || '';
+  document.getElementById('cloudURL').value = cloudURL || DEFAULT_CLOUD_URL;
   document.getElementById('cloudKey').value = cloudKey || '';
   renderSettingsStations();
   renderFieldMgmt();
