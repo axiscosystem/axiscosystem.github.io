@@ -934,8 +934,20 @@ tr:hover td { background: var(--hover-bg); }
       <a class="nav-item" data-section="employees" onclick="showSection('employees')">
         <span class="icon">&#9783;</span> <span data-i18n="employees">الموظفون</span>
       </a>
+      <a class="nav-item" data-section="expenses" onclick="showSection('expenses')">
+        <span class="icon">&#9782;</span> <span data-i18n="expenses">المصروفات</span>
+      </a>
+      <a class="nav-item" data-section="debts" onclick="showSection('debts')">
+        <span class="icon">&#9826;</span> <span data-i18n="debts">الديون</span>
+      </a>
+      <a class="nav-item" data-section="shifts" onclick="showSection('shifts')">
+        <span class="icon">&#9201;</span> <span data-i18n="shifts">المناوبات</span>
+      </a>
       <a class="nav-item" data-section="activitylog" onclick="showSection('activitylog')">
         <span class="icon">&#9776;</span> <span data-i18n="activityLog">سجل الحركات</span>
+      </a>
+      <a class="nav-item" data-section="analytics" onclick="showSection('analytics')">
+        <span class="icon">&#9883;</span> <span data-i18n="analytics">التحليلات</span>
       </a>
       <a class="nav-item" data-section="settings" onclick="showSection('settings')" id="navSettings">
         <span class="icon">&#9881;</span> <span data-i18n="settings">الإعدادات</span>
@@ -1222,6 +1234,72 @@ tr:hover td { background: var(--hover-bg); }
       <div id="activityLogList"></div>
     </div>
 
+    <!-- Expenses Section -->
+    <div class="section" id="section-expenses">
+      <div class="section-header">
+        <h2 data-i18n="expenses">المصروفات</h2>
+        <button class="btn btn-accent btn-sm" onclick="openExpenseModal()" data-i18n="addExpense">+ إضافة مصروف</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+        <select id="expenseFilterStation" onchange="renderExpenses()" style="flex:1;min-width:120px;padding:8px 12px;border:2px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;">
+          <option value="" data-i18n="selectStation">كل المحطات</option>
+        </select>
+        <input type="month" id="expenseFilterMonth" onchange="renderExpenses()" style="padding:8px 12px;border:2px solid var(--border);border-radius:8px;font-size:13px;">
+        <span id="expenseTotal" style="display:flex;align-items:center;font-size:14px;font-weight:600;color:var(--primary);padding:0 12px;"></span>
+      </div>
+      <div id="expenseList" style="margin-top:12px;"></div>
+    </div>
+
+    <!-- Debts Section -->
+    <div class="section" id="section-debts">
+      <div class="section-header">
+        <h2 data-i18n="debts">الديون</h2>
+        <button class="btn btn-accent btn-sm" onclick="openDebtModal()" data-i18n="addDebt">+ إضافة دين</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+        <select id="debtFilterStation" onchange="renderDebts()" style="flex:1;min-width:120px;padding:8px 12px;border:2px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;">
+          <option value="" data-i18n="selectStation">كل المحطات</option>
+        </select>
+        <span id="debtTotal" style="display:flex;align-items:center;font-size:14px;font-weight:600;color:var(--primary);padding:0 12px;"></span>
+      </div>
+      <div id="debtList" style="margin-top:12px;"></div>
+    </div>
+
+    <!-- Shifts Section -->
+    <div class="section" id="section-shifts">
+      <div class="section-header">
+        <h2 data-i18n="shifts">المناوبات</h2>
+        <button class="btn btn-accent btn-sm" onclick="openShiftModal()" data-i18n="addShift">+ تسجيل مناوبة</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+        <select id="shiftFilterStation" onchange="renderShifts()" style="flex:1;min-width:120px;padding:8px 12px;border:2px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;">
+          <option value="" data-i18n="selectStation">كل المحطات</option>
+        </select>
+        <input type="date" id="shiftFilterDate" onchange="renderShifts()" style="padding:8px 12px;border:2px solid var(--border);border-radius:8px;font-size:13px;">
+      </div>
+      <div id="shiftList" style="margin-top:12px;"></div>
+    </div>
+
+    <!-- Analytics Section -->
+    <div class="section" id="section-analytics">
+      <div class="section-header">
+        <h2 data-i18n="analytics">التحليلات</h2>
+      </div>
+      <div style="margin-top:12px;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+          <button class="btn btn-sm btn-outline" onclick="renderAnalytics(7)" style="flex:1;">7 {{ '{{' }} lang === 'ar' ? 'أيام' : 'Days' }}</button>
+          <button class="btn btn-sm btn-outline" onclick="renderAnalytics(30)" style="flex:1;">30 {{ '{{' }} lang === 'ar' ? 'يوماً' : 'Days' }}</button>
+        </div>
+        <canvas id="salesChart" style="width:100%;max-height:300px;"></canvas>
+        <div style="display:flex;gap:16px;margin-top:16px;flex-wrap:wrap;">
+          <div class="stat-card" style="flex:1;min-width:120px;"><div class="stat-label" data-i18n="totalSales">إجمالي المبيعات</div><div id="analyticsTotalSales" class="stat-value">٠</div></div>
+          <div class="stat-card" style="flex:1;min-width:120px;"><div class="stat-label" data-i18n="totalLiters">إجمالي اللترات</div><div id="analyticsTotalLiters" class="stat-value">٠</div></div>
+          <div class="stat-card" style="flex:1;min-width:120px;"><div class="stat-label" data-i18n="totalExpenses">إجمالي المصروفات</div><div id="analyticsTotalExpenses" class="stat-value">٠</div></div>
+          <div class="stat-card" style="flex:1;min-width:120px;"><div class="stat-label" data-i18n="netProfit">صافي الربح</div><div id="analyticsNetProfit" class="stat-value">٠</div></div>
+        </div>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -1324,6 +1402,109 @@ tr:hover td { background: var(--hover-bg); }
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="closeModal('employeeModal')" data-i18n="cancel">إلغاء</button>
       <button class="btn btn-primary" onclick="saveEmployee()" data-i18n="save">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Expense Modal -->
+<div class="modal-overlay" id="expenseModal">
+  <div class="modal">
+    <h3 id="expenseModalTitle">إضافة مصروف</h3>
+    <div class="form-group">
+      <label data-i18n="expenseStation">المحطة</label>
+      <select id="expenseStation" style="width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;"></select>
+    </div>
+    <div class="form-group">
+      <label data-i18n="expenseType">نوع المصروف</label>
+      <select id="expenseType" style="width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;"></select>
+    </div>
+    <div class="form-group">
+      <label data-i18n="expenseAmount">المبلغ</label>
+      <input type="text" inputmode="numeric" pattern="[0-9]*" class="num-input" id="expenseAmount" placeholder="مثال: 500">
+    </div>
+    <div class="form-group">
+      <label data-i18n="expenseDate">تاريخ المصروف</label>
+      <input type="date" id="expenseDate">
+    </div>
+    <div class="form-group">
+      <label data-i18n="expenseNotes">ملاحظات</label>
+      <input type="text" id="expenseNotes" placeholder="اختياري">
+    </div>
+    <input type="hidden" id="expenseEditId">
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('expenseModal')" data-i18n="cancel">إلغاء</button>
+      <button class="btn btn-primary" onclick="saveExpense()" data-i18n="save">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Debt Modal -->
+<div class="modal-overlay" id="debtModal">
+  <div class="modal">
+    <h3 id="debtModalTitle">إضافة دين</h3>
+    <div class="form-group">
+      <label data-i18n="customerName">اسم العميل</label>
+      <input type="text" id="debtCustomer" placeholder="اسم العميل">
+    </div>
+    <div class="form-group">
+      <label data-i18n="expenseStation">المحطة</label>
+      <select id="debtStation" style="width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;"></select>
+    </div>
+    <div class="form-group">
+      <label data-i18n="debtAmount">المبلغ</label>
+      <input type="text" inputmode="numeric" pattern="[0-9]*" class="num-input" id="debtAmount" placeholder="مثال: 1000">
+    </div>
+    <div class="form-group">
+      <label data-i18n="debtDate">تاريخ الدين</label>
+      <input type="date" id="debtDate">
+    </div>
+    <div class="form-group">
+      <label data-i18n="debtNotes">ملاحظات</label>
+      <input type="text" id="debtNotes" placeholder="اختياري">
+    </div>
+    <input type="hidden" id="debtEditId">
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('debtModal')" data-i18n="cancel">إلغاء</button>
+      <button class="btn btn-primary" onclick="saveDebt()" data-i18n="save">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Shift Modal -->
+<div class="modal-overlay" id="shiftModal">
+  <div class="modal">
+    <h3 id="shiftModalTitle">تسجيل مناوبة</h3>
+    <div class="form-group">
+      <label data-i18n="shiftStation">المحطة</label>
+      <select id="shiftStation" style="width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;"></select>
+    </div>
+    <div class="form-group">
+      <label data-i18n="shiftEmployee">الموظف</label>
+      <select id="shiftEmployee" style="width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;"></select>
+    </div>
+    <div class="form-group">
+      <label data-i18n="shiftPeriod">الفترة</label>
+      <select id="shiftPeriod" style="width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;">
+        <option value="صباحي" data-i18n="shiftMorning">صباحي</option>
+        <option value="مسائي" data-i18n="shiftEvening">مسائي</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label data-i18n="shiftDate">التاريخ</label>
+      <input type="date" id="shiftDate">
+    </div>
+    <div class="form-group">
+      <label data-i18n="shiftIn">وقت الحضور</label>
+      <input type="time" id="shiftIn">
+    </div>
+    <div class="form-group">
+      <label data-i18n="shiftOut">وقت الانصراف</label>
+      <input type="time" id="shiftOut">
+    </div>
+    <input type="hidden" id="shiftEditId">
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('shiftModal')" data-i18n="cancel">إلغاء</button>
+      <button class="btn btn-primary" onclick="saveShift()" data-i18n="save">حفظ</button>
     </div>
   </div>
 </div>
@@ -1620,10 +1801,94 @@ const i18n = {
     tankCurrent: 'المستوى الحالي',
     toastBulkSent: 'تم إرسال طلبات التموين بنجاح',
     // Cloud
-    cloudHint: 'مثال: https://my-project.firebaseio.com/data.json — مجاني عبر Firebase',
+    cloudHint: 'تم ربط قاعدة بيانات سحابية مجانية — بياناتك محفوظة تلقائياً (يمكنك تغيير الرابط أعلاه)',
     // Titles
     exportTooltip: 'تصدير البيانات',
     importTooltip: 'استيراد البيانات',
+    // Expenses
+    expenses: 'المصروفات',
+    addExpense: '+ إضافة مصروف',
+    expenseType: 'نوع المصروف',
+    expenseAmount: 'المبلغ',
+    expenseDate: 'تاريخ المصروف',
+    expenseNotes: 'ملاحظات',
+    expenseStation: 'المحطة',
+    expenseTypes: ['كهرباء', 'مياه', 'عمالة', 'صيانة', 'إيجار', 'أخرى'],
+    editExpense: 'تعديل المصروف',
+    toastExpenseAdded: 'تم إضافة المصروف',
+    toastExpenseUpdated: 'تم تحديث المصروف',
+    toastExpenseDeleted: 'تم حذف المصروف',
+    confirmDeleteExpense: 'حذف المصروف؟',
+    totalExpenses: 'إجمالي المصروفات',
+    noExpenses: 'لا توجد مصروفات',
+    // Debts
+    debts: 'الديون',
+    addDebt: '+ إضافة دين',
+    customerName: 'اسم العميل',
+    debtAmount: 'المبلغ',
+    debtPaid: 'المدفوع',
+    debtRemaining: 'المتبقي',
+    debtDate: 'تاريخ الدين',
+    debtNotes: 'ملاحظات',
+    debtStatus: 'الحالة',
+    debtPending: 'غير مدفوع',
+    debtPartial: 'مدفوع جزئياً',
+    debtPaidFull: 'مدفوع بالكامل',
+    addPayment: 'إضافة دفعة',
+    paymentAmount: 'قيمة الدفعة',
+    paymentDate: 'تاريخ الدفعة',
+    toastDebtAdded: 'تم إضافة الدين',
+    toastDebtUpdated: 'تم تحديث الدين',
+    toastDebtDeleted: 'تم حذف الدين',
+    toastPaymentAdded: 'تم إضافة الدفعة',
+    confirmDeleteDebt: 'حذف الدين؟',
+    totalDebts: 'إجمالي الديون',
+    totalRemaining: 'إجمالي المتبقي',
+    noDebts: 'لا توجد ديون',
+    // Shifts
+    shifts: 'المناوبات',
+    addShift: '+ تسجيل مناوبة',
+    shiftDate: 'تاريخ المناوبة',
+    shiftPeriod: 'الفترة',
+    shiftMorning: 'صباحي',
+    shiftEvening: 'مسائي',
+    shiftEmployee: 'الموظف',
+    shiftStation: 'المحطة',
+    shiftIn: 'وقت الحضور',
+    shiftOut: 'وقت الانصراف',
+    editShift: 'تعديل المناوبة',
+    toastShiftAdded: 'تم تسجيل المناوبة',
+    toastShiftUpdated: 'تم تحديث المناوبة',
+    toastShiftDeleted: 'تم حذف المناوبة',
+    confirmDeleteShift: 'حذف المناوبة؟',
+    todayShifts: 'مناوبات اليوم',
+    noShifts: 'لا توجد مناوبات',
+    // Invoice
+    invoiceTitle: 'فاتورة مبيعات',
+    invoiceNo: 'رقم الفاتورة',
+    invoiceDate: 'تاريخ الفاتورة',
+    invoiceStation: 'محطة',
+    invoiceItem: 'الصنف',
+    invoiceQty: 'الكمية',
+    invoicePrice: 'سعر الوحدة',
+    invoiceTotal: 'الإجمالي',
+    invoiceSubtotal: 'المجموع',
+    invoiceVAT: 'ضريبة ١٥٪',
+    invoiceGrandTotal: 'الإجمالي النهائي',
+    printBtn: 'طباعة',
+    invoiceFooter: 'شكراً لتعاملكم — axisco',
+    // Analytics
+    analytics: 'التحليلات',
+    salesChart: 'الرسم البياني للمبيعات',
+    chartPeriod: 'الفترة',
+    chart7Days: '٧ أيام',
+    chart30Days: '٣٠ يوماً',
+    chartByStation: 'حسب المحطة',
+    chartByFuel: 'حسب نوع الوقود',
+    chartSalesTrend: 'اتجاه المبيعات',
+    profit: 'الأرباح',
+    cost: 'التكلفة',
+    netProfit: 'صافي الربح',
   },
   en: {
     title: 'axisco - Fuel Station Management System',
@@ -1857,6 +2122,90 @@ const i18n = {
     // Titles
     exportTooltip: 'Export Data',
     importTooltip: 'Import Data',
+    // Expenses
+    expenses: 'Expenses',
+    addExpense: '+ Add Expense',
+    expenseType: 'Expense Type',
+    expenseAmount: 'Amount',
+    expenseDate: 'Expense Date',
+    expenseNotes: 'Notes',
+    expenseStation: 'Station',
+    expenseTypes: ['Electricity', 'Water', 'Labor', 'Maintenance', 'Rent', 'Other'],
+    editExpense: 'Edit Expense',
+    toastExpenseAdded: 'Expense added',
+    toastExpenseUpdated: 'Expense updated',
+    toastExpenseDeleted: 'Expense deleted',
+    confirmDeleteExpense: 'Delete this expense?',
+    totalExpenses: 'Total Expenses',
+    noExpenses: 'No expenses',
+    // Debts
+    debts: 'Debts',
+    addDebt: '+ Add Debt',
+    customerName: 'Customer Name',
+    debtAmount: 'Amount',
+    debtPaid: 'Paid',
+    debtRemaining: 'Remaining',
+    debtDate: 'Date',
+    debtNotes: 'Notes',
+    debtStatus: 'Status',
+    debtPending: 'Unpaid',
+    debtPartial: 'Partially Paid',
+    debtPaidFull: 'Fully Paid',
+    addPayment: 'Add Payment',
+    paymentAmount: 'Payment Amount',
+    paymentDate: 'Payment Date',
+    toastDebtAdded: 'Debt added',
+    toastDebtUpdated: 'Debt updated',
+    toastDebtDeleted: 'Debt deleted',
+    toastPaymentAdded: 'Payment added',
+    confirmDeleteDebt: 'Delete this debt?',
+    totalDebts: 'Total Debts',
+    totalRemaining: 'Total Remaining',
+    noDebts: 'No debts',
+    // Shifts
+    shifts: 'Shifts',
+    addShift: '+ Add Shift',
+    shiftDate: 'Shift Date',
+    shiftPeriod: 'Period',
+    shiftMorning: 'Morning',
+    shiftEvening: 'Evening',
+    shiftEmployee: 'Employee',
+    shiftStation: 'Station',
+    shiftIn: 'Clock In',
+    shiftOut: 'Clock Out',
+    editShift: 'Edit Shift',
+    toastShiftAdded: 'Shift recorded',
+    toastShiftUpdated: 'Shift updated',
+    toastShiftDeleted: 'Shift deleted',
+    confirmDeleteShift: 'Delete this shift?',
+    todayShifts: "Today's Shifts",
+    noShifts: 'No shifts',
+    // Invoice
+    invoiceTitle: 'Sales Invoice',
+    invoiceNo: 'Invoice No',
+    invoiceDate: 'Invoice Date',
+    invoiceStation: 'Station',
+    invoiceItem: 'Item',
+    invoiceQty: 'Qty',
+    invoicePrice: 'Unit Price',
+    invoiceTotal: 'Total',
+    invoiceSubtotal: 'Subtotal',
+    invoiceVAT: 'VAT 15%',
+    invoiceGrandTotal: 'Grand Total',
+    printBtn: 'Print',
+    invoiceFooter: 'Thank you for your business — axisco',
+    // Analytics
+    analytics: 'Analytics',
+    salesChart: 'Sales Chart',
+    chartPeriod: 'Period',
+    chart7Days: '7 Days',
+    chart30Days: '30 Days',
+    chartByStation: 'By Station',
+    chartByFuel: 'By Fuel Type',
+    chartSalesTrend: 'Sales Trend',
+    profit: 'Profit',
+    cost: 'Cost',
+    netProfit: 'Net Profit',
   }
 };
 
@@ -2107,7 +2456,11 @@ const defaultData = {
   ],
   fuelOrders: [],
   dailyReadings: [],
-  activityLog: []
+  activityLog: [],
+  expenses: [],
+  debts: [],
+  debtPayments: [],
+  shifts: []
 };
 
 function ensureTanks(d) {
@@ -2209,7 +2562,7 @@ async function loadServerData() {
   return null;
 }
 
-let data, stationIdCounter, priceIdCounter, tankIdCounter, saleIdCounter, empIdCounter, fuelOrderIdCounter, readingIdCounter;
+let data, stationIdCounter, priceIdCounter, tankIdCounter, saleIdCounter, empIdCounter, fuelOrderIdCounter, readingIdCounter, expenseIdCounter, debtIdCounter, paymentIdCounter, shiftIdCounter;
 (async () => {
   try {
     const sd = await loadServerData();
@@ -2237,6 +2590,10 @@ let data, stationIdCounter, priceIdCounter, tankIdCounter, saleIdCounter, empIdC
   empIdCounter = data.employees.length + 1;
   fuelOrderIdCounter = (data.fuelOrders?.length || 0) + 1;
   readingIdCounter = (data.dailyReadings?.length || 0) + 1;
+  expenseIdCounter = (data.expenses?.length || 0) + 1;
+  debtIdCounter = (data.debts?.length || 0) + 1;
+  paymentIdCounter = (data.debtPayments?.length || 0) + 1;
+  shiftIdCounter = (data.shifts?.length || 0) + 1;
   initTheme();
   autoLogin();
 })();
@@ -2297,6 +2654,28 @@ function onGlobalSearch(q) {
     const txt = `${tfuel(sl.fuelType)} ${s ? s.name : ''} ${fmtNum(sl.quantity)}`;
     if (txt.toLowerCase().includes(q))
       results.push({ label: `🧾 ${tfuel(sl.fuelType)} ${fmtNum(sl.quantity)}L - ${s ? s.name : '?'}`, section: 'sales' });
+  });
+  // Search expenses
+  (data.expenses || []).forEach(ex => {
+    const s = data.stations.find(st => st.id === ex.stationId);
+    const txt = `${ex.expenseType} ${s ? s.name : ''} ${fmtNum(ex.amount)}`;
+    if (txt.toLowerCase().includes(q))
+      results.push({ label: `📋 ${ex.expenseType} ${fmtNum(ex.amount)} - ${s ? s.name : '?'}`, section: 'expenses' });
+  });
+  // Search debts
+  (data.debts || []).forEach(d => {
+    const s = data.stations.find(st => st.id === d.stationId);
+    const txt = `${d.customer || d.customerName || ''} ${s ? s.name : ''} ${fmtNum(d.amount)}`;
+    if (txt.toLowerCase().includes(q))
+      results.push({ label: `📝 ${d.customer || d.customerName || '?'} ${fmtNum(d.amount)} - ${s ? s.name : '?'}`, section: 'debts' });
+  });
+  // Search shifts
+  (data.shifts || []).forEach(sh => {
+    const s = data.stations.find(st => st.id === sh.stationId);
+    const emp = data.employees.find(e => e.id === sh.employeeId);
+    const txt = `${emp ? emp.name : ''} ${s ? s.name : ''} ${sh.period || ''}`;
+    if (txt.toLowerCase().includes(q))
+      results.push({ label: `🕐 ${emp ? emp.name : '?'} ${sh.period || ''} - ${s ? s.name : '?'}`, section: 'shifts' });
   });
   if (!results.length) {
     res.innerHTML = `<div style="padding:12px;text-align:center;color:var(--text-muted);font-size:13px;">${t('noData')}</div>`;
@@ -2437,6 +2816,7 @@ function clearAllData() {
   data.stations = []; data.prices = []; data.tanks = [];
   data.sales = []; data.employees = []; data.fuelOrders = [];
   data.dailyReadings = []; data.activityLog = [];
+  data.expenses = []; data.debts = []; data.debtPayments = []; data.shifts = [];
   data.fuelTypes = []; data.empRoles = []; data.archivedData = null;
   saveData(data);
   initDashboard();
@@ -2640,6 +3020,29 @@ function showSection(name, noPush) {
   if (name === 'tanks' && typeof renderTanks === 'function') renderTanks();
   if (name === 'prices' && typeof renderPrices === 'function') renderPrices();
   if (name === 'sales' && typeof renderSales === 'function') renderSales();
+  if (name === 'expenses' && typeof renderExpenses === 'function') renderExpenses();
+  if (name === 'debts' && typeof renderDebts === 'function') renderDebts();
+  if (name === 'shifts' && typeof renderShifts === 'function') renderShifts();
+  if (name === 'analytics' && typeof renderAnalytics === 'function') renderAnalytics(7);
+  // Populate filter selects
+  if (name === 'expenses' || name === 'debts' || name === 'shifts') {
+    ['expenseFilterStation','debtFilterStation','shiftFilterStation'].forEach(id => {
+      const sel = document.getElementById(id);
+      if (sel && sel.options.length <= 1) {
+        data.stations.forEach(s => {
+          const opt = document.createElement('option'); opt.value = s.id; opt.textContent = s.name; sel.appendChild(opt);
+        });
+      }
+    });
+  }
+  if (name === 'expenses') {
+    const mf = document.getElementById('expenseFilterMonth');
+    if (mf && !mf.value) mf.value = new Date().toISOString().slice(0, 7);
+  }
+  if (name === 'shifts') {
+    const df = document.getElementById('shiftFilterDate');
+    if (df && !df.value) df.value = new Date().toISOString().slice(0, 10);
+  }
   if (!noPush) pushNav(name);
 }
 
@@ -3153,7 +3556,7 @@ function printInvoice(id, type) {
   let item, title;
   if (type === 'sale') {
     item = (data.sales || []).find(s => s.id === id);
-    title = t('sales');
+    title = t('invoiceTitle');
   } else {
     item = (data.fuelOrders || []).find(o => o.id === id);
     title = t('fuelOrders');
@@ -3161,22 +3564,69 @@ function printInvoice(id, type) {
   if (!item) return;
   const w = window.open('', '_blank');
   if (!w) { showToast(t('noData'), 'error'); return; }
-  w.document.write(`<html><head><meta charset="UTF-8"><title>axisco - ${title}</title><style>
-    body{font-family:sans-serif;padding:20px;color:#000;}
-    .invoice{max-width:700px;margin:0 auto;background:white;padding:30px;}
-    table{width:100%;border-collapse:collapse;margin:16px 0;}
-    th,td{border:1px solid #ccc;padding:8px 12px;text-align:center;}
-    th{background:#f5f5f5;}
-    h2{text-align:center;margin-bottom:8px;}
-    .meta{text-align:center;color:#666;font-size:13px;margin-bottom:20px;}
-    .total{font-size:18px;font-weight:700;text-align:center;margin-top:12px;}
-  </style></head><body><div class="invoice">
-    <h2>axisco</h2>
-    <div class="meta">${fmtDateTime(item.date, { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}</div>
-    <table><tr><th>${t('productId')}</th><th>${t('station')}</th><th>${t('fuelType')}</th><th>${t('quantity')}</th><th>${t('sumCol')}</th></tr>
-    <tr><td>#${item.id}</td><td>${(data.stations.find(s=>s.id===item.stationId)||{}).name||'?'}</td><td>${tfuel(item.fuelType||item.type||'?')}</td><td>${fmtNum(item.quantity||item.amount||0)}</td><td>${fmtNum(item.total||item.price||0)}</td></tr></table>
-    <div class="total">${t('sumCol')}: ${fmtNum(item.total||item.price||0)}</div>
-  </div><script>window.print();<\/script></body></html>`);
+  const station = data.stations.find(s => s.id === item.stationId);
+  const sname = station ? station.name : '';
+  const fontDir = currentLang === 'ar' ? 'rtl' : 'ltr';
+  const dateStr = fmtDateTime(item.date, { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+  if (type === 'sale') {
+    const qty = item.quantity || 0;
+    const unitPrice = item.price || 0;
+    const subtotal = qty * unitPrice;
+    const vatRate = 0.15;
+    const vat = subtotal * vatRate;
+    const grandTotal = subtotal + vat;
+    w.document.write(`<html><head><meta charset="UTF-8"><title>axisco - ${t('invoiceTitle')}</title><style>
+      body{font-family:Segoe UI,Tahoma,sans-serif;padding:20px;color:#000;direction:${fontDir};}
+      .invoice{max-width:700px;margin:0 auto;background:white;padding:30px;border:1px solid #ddd;border-radius:4px;}
+      .header{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #F18904;padding-bottom:12px;margin-bottom:16px;}
+      .header h1{color:#F18904;margin:0;font-size:24px;}
+      .header .inv-info{text-align:right;font-size:13px;color:#666;}
+      table{width:100%;border-collapse:collapse;margin:16px 0;}
+      th,td{border:1px solid #ccc;padding:10px 14px;text-align:center;}
+      th{background:#f5f5f5;font-weight:600;}
+      .totals-table td{border:none;padding:4px 10px;text-align:right;}
+      .totals-table{max-width:300px;margin-left:auto;}
+      .grand-total{font-size:18px;font-weight:700;color:#F18904;}
+      .footer{text-align:center;margin-top:30px;font-size:13px;color:#999;border-top:1px solid #eee;padding-top:12px;}
+      @media print{body{padding:0;}.invoice{border:none;}}
+    </style></head><body><div class="invoice">
+      <div class="header">
+        <h1>axisco</h1>
+        <div class="inv-info">
+          <div><strong>${t('invoiceNo')}:</strong> ${item.id.toString().padStart(4,'0')}</div>
+          <div><strong>${t('invoiceDate')}:</strong> ${dateStr}</div>
+          <div><strong>${t('station')}:</strong> ${sname}</div>
+        </div>
+      </div>
+      <table>
+        <tr><th>#</th><th>${t('invoiceItem')}</th><th>${t('invoiceQty')} (L)</th><th>${t('invoicePrice')}</th><th>${t('invoiceTotal')}</th></tr>
+        <tr><td>1</td><td>${tfuel(item.fuelType)}</td><td>${fmtNum(qty)}</td><td>${fmtNum(unitPrice, 2)} ${t('currency')}</td><td>${fmtNum(subtotal, 2)} ${t('currency')}</td></tr>
+      </table>
+      <table class="totals-table">
+        <tr><td>${t('invoiceSubtotal')}</td><td>${fmtNum(subtotal, 2)} ${t('currency')}</td></tr>
+        <tr><td>${t('invoiceVAT')}</td><td>${fmtNum(vat, 2)} ${t('currency')}</td></tr>
+        <tr class="grand-total"><td><strong>${t('invoiceGrandTotal')}</strong></td><td><strong>${fmtNum(grandTotal, 2)} ${t('currency')}</strong></td></tr>
+      </table>
+      <div class="footer">${t('invoiceFooter')}</div>
+    </div><script>window.print();<\/script></body></html>`);
+  } else {
+    w.document.write(`<html><head><meta charset="UTF-8"><title>axisco - ${title}</title><style>
+      body{font-family:sans-serif;padding:20px;color:#000;direction:${fontDir};}
+      .invoice{max-width:700px;margin:0 auto;background:white;padding:30px;}
+      table{width:100%;border-collapse:collapse;margin:16px 0;}
+      th,td{border:1px solid #ccc;padding:8px 12px;text-align:center;}
+      th{background:#f5f5f5;}
+      h2{text-align:center;margin-bottom:8px;}
+      .meta{text-align:center;color:#666;font-size:13px;margin-bottom:20px;}
+      .total{font-size:18px;font-weight:700;text-align:center;margin-top:12px;}
+    </style></head><body><div class="invoice">
+      <h2>axisco</h2>
+      <div class="meta">${dateStr}</div>
+      <table><tr><th>${t('productId')}</th><th>${t('station')}</th><th>${t('fuelType')}</th><th>${t('quantity')}</th><th>${t('sumCol')}</th></tr>
+      <tr><td>#${item.id}</td><td>${sname}</td><td>${tfuel(item.fuelType||item.type||'?')}</td><td>${fmtNum(item.quantity||item.amount||0)}</td><td>${fmtNum(item.total||item.price||0)}</td></tr></table>
+      <div class="total">${t('sumCol')}: ${fmtNum(item.total||item.price||0)}</div>
+    </div><script>window.print();<\/script></body></html>`);
+  }
   w.document.close();
 }
 
@@ -4029,6 +4479,353 @@ function deleteEmployee(id) {
   addLog('delete_employee', 'Deleted employee #'+id);
 }
 
+// ====== EXPENSES ======
+function renderExpenses() {
+  const list = document.getElementById('expenseList');
+  const stationFilter = document.getElementById('expenseFilterStation');
+  const monthFilter = document.getElementById('expenseFilterMonth');
+  const filterStationId = stationFilter.value ? parseInt(stationFilter.value) : null;
+  const filterMonth = monthFilter.value;
+  let items = data.expenses || [];
+  if (filterStationId) items = items.filter(e => e.stationId === filterStationId);
+  if (filterMonth) items = items.filter(e => e.date && e.date.startsWith(filterMonth));
+  const total = items.reduce((s, e) => s + (e.amount || 0), 0);
+  document.getElementById('expenseTotal').textContent = t('totalExpenses') + ': ' + fmtNum(total, 2) + ' ' + t('currency');
+  list.innerHTML = '';
+  if (!items.length) { list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);">' + t('noExpenses') + '</div>'; return; }
+  items.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0)).forEach(e => {
+    const st = data.stations.find(s => s.id === e.stationId);
+    const div = document.createElement('div');
+    div.className = 'employee-item';
+    div.innerHTML = `
+      <div class="employee-info" style="flex-direction:column;align-items:flex-start;">
+        <div style="font-weight:600;">${e.expenseType || '-'}</div>
+        <div style="font-size:13px;color:var(--text-muted);">${st ? st.name : '-'} | ${fmtNum(e.amount, 2)} ${t('currency')} | ${e.date || '-'}</div>
+        ${e.notes ? '<div style="font-size:12px;color:var(--text-muted);">' + e.notes + '</div>' : ''}
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="btn btn-sm btn-outline" onclick="editExpense(${e.id})">${t('edit')}</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteExpense(${e.id})">${t('delete')}</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+function openExpenseModal(e) {
+  if (!requireAdmin()) return;
+  document.getElementById('expenseEditId').value = e ? e.id : '';
+  document.getElementById('expenseModalTitle').textContent = e ? t('editExpense') : t('addExpense');
+  const stationSelect = document.getElementById('expenseStation');
+  stationSelect.innerHTML = '';
+  data.stations.forEach(s => {
+    const opt = document.createElement('option'); opt.value = s.id; opt.textContent = s.name; stationSelect.appendChild(opt);
+  });
+  const typeSelect = document.getElementById('expenseType');
+  typeSelect.innerHTML = '';
+  (t('expenseTypes') === 'expenseTypes' ? ['كهرباء', 'مياه', 'عمالة', 'صيانة', 'إيجار', 'أخرى'] : t('expenseTypes')).forEach(et => {
+    const opt = document.createElement('option'); opt.value = et; opt.textContent = et; typeSelect.appendChild(opt);
+  });
+  if (e) {
+    stationSelect.value = e.stationId;
+    typeSelect.value = e.expenseType;
+    document.getElementById('expenseAmount').value = e.amount;
+    document.getElementById('expenseDate').value = e.date || '';
+    document.getElementById('expenseNotes').value = e.notes || '';
+  } else {
+    stationSelect.value = data.stations[0]?.id || '';
+    typeSelect.value = 'كهرباء';
+    document.getElementById('expenseAmount').value = '';
+    document.getElementById('expenseDate').value = new Date().toISOString().slice(0, 10);
+    document.getElementById('expenseNotes').value = '';
+  }
+  openModal('expenseModal');
+}
+function saveExpense() {
+  if (!requireAdmin()) return;
+  const editId = document.getElementById('expenseEditId').value;
+  const stationId = parseInt(document.getElementById('expenseStation').value);
+  const expenseType = document.getElementById('expenseType').value;
+  const amount = parseFloat(document.getElementById('expenseAmount').value);
+  const date = document.getElementById('expenseDate').value;
+  const notes = document.getElementById('expenseNotes').value.trim();
+  if (!stationId || !expenseType || isNaN(amount) || amount <= 0) { showToast(t('toastValid'), 'error'); return; }
+  if (editId) {
+    const ex = data.expenses.find(x => x.id === parseInt(editId));
+    if (ex) { ex.stationId = stationId; ex.expenseType = expenseType; ex.amount = amount; ex.date = date; ex.notes = notes; }
+    showToast(t('toastExpenseUpdated'), 'success');
+    addLog('edit_expense', 'Updated expense #'+editId);
+  } else {
+    data.expenses.push({ id: expenseIdCounter++, stationId, expenseType, amount, date, notes });
+    showToast(t('toastExpenseAdded'), 'success');
+    addLog('save_expense', 'Expense '+expenseType+' '+amount);
+  }
+  saveData(data); closeModal('expenseModal'); renderExpenses(); renderHome();
+}
+function editExpense(id) { const e = data.expenses.find(x => x.id === id); if (e) openExpenseModal(e); }
+function deleteExpense(id) {
+  if (!requireAdmin()) return;
+  if (!confirm(t('confirmDeleteExpense'))) return;
+  data.expenses = data.expenses.filter(x => x.id !== id);
+  saveData(data); renderExpenses(); renderHome();
+  showToast(t('toastExpenseDeleted'), 'success'); addLog('delete_expense', 'Deleted expense #'+id);
+}
+
+// ====== DEBTS ======
+function renderDebts() {
+  const list = document.getElementById('debtList');
+  const stationFilter = document.getElementById('debtFilterStation');
+  const filterId = stationFilter.value ? parseInt(stationFilter.value) : null;
+  let items = data.debts || [];
+  if (filterId) items = items.filter(d => d.stationId === filterId);
+  const totalRemaining = items.reduce((s, d) => s + (d.remaining || d.amount || 0), 0);
+  const totalDebts = items.reduce((s, d) => s + (d.amount || 0), 0);
+  document.getElementById('debtTotal').textContent = t('totalDebts') + ': ' + fmtNum(totalDebts, 2) + ' ' + t('currency') + ' | ' + t('totalRemaining') + ': ' + fmtNum(totalRemaining, 2) + ' ' + t('currency');
+  list.innerHTML = '';
+  if (!items.length) { list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);">' + t('noDebts') + '</div>'; return; }
+  items.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0)).forEach(d => {
+    const remaining = d.remaining !== undefined ? d.remaining : (d.amount - (d.paid || 0));
+    let statusText = remaining <= 0 ? t('debtPaidFull') : (d.paid > 0 ? t('debtPartial') : t('debtPending'));
+    let statusColor = remaining <= 0 ? 'var(--success)' : (d.paid > 0 ? 'var(--warning)' : 'var(--danger)');
+    const st = data.stations.find(s => s.id === d.stationId);
+    const div = document.createElement('div');
+    div.className = 'employee-item';
+    div.innerHTML = `
+      <div class="employee-info" style="flex-direction:column;align-items:flex-start;">
+        <div><strong>${d.customer || d.customerName || '-'}</strong> <span style="color:${statusColor};font-size:12px;">${statusText}</span></div>
+        <div style="font-size:13px;color:var(--text-muted);">${st ? st.name : '-'} | ${fmtNum(d.amount, 2)} ${t('currency')} | مدفوع: ${fmtNum(d.paid || 0, 2)} | متبقي: ${fmtNum(remaining, 2)} ${t('currency')}</div>
+        ${d.notes ? '<div style="font-size:12px;color:var(--text-muted);">' + d.notes + '</div>' : ''}
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        ${remaining > 0 ? '<button class="btn btn-sm btn-primary" onclick="addDebtPayment('+d.id+')">' + t('addPayment') + '</button>' : ''}
+        <button class="btn btn-sm btn-outline" onclick="editDebt(${d.id})">${t('edit')}</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteDebt(${d.id})">${t('delete')}</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+function openDebtModal(d) {
+  if (!requireAdmin()) return;
+  document.getElementById('debtEditId').value = d ? d.id : '';
+  document.getElementById('debtModalTitle').textContent = d ? t('editExpense') : t('addDebt');
+  const stationSelect = document.getElementById('debtStation');
+  stationSelect.innerHTML = '';
+  data.stations.forEach(s => {
+    const opt = document.createElement('option'); opt.value = s.id; opt.textContent = s.name; stationSelect.appendChild(opt);
+  });
+  if (d) {
+    document.getElementById('debtCustomer').value = d.customer || d.customerName || '';
+    stationSelect.value = d.stationId;
+    document.getElementById('debtAmount').value = d.amount;
+    document.getElementById('debtDate').value = d.date || '';
+    document.getElementById('debtNotes').value = d.notes || '';
+  } else {
+    document.getElementById('debtCustomer').value = '';
+    stationSelect.value = data.stations[0]?.id || '';
+    document.getElementById('debtAmount').value = '';
+    document.getElementById('debtDate').value = new Date().toISOString().slice(0, 10);
+    document.getElementById('debtNotes').value = '';
+  }
+  openModal('debtModal');
+}
+function saveDebt() {
+  if (!requireAdmin()) return;
+  const editId = document.getElementById('debtEditId').value;
+  const customer = document.getElementById('debtCustomer').value.trim();
+  const stationId = parseInt(document.getElementById('debtStation').value);
+  const amount = parseFloat(document.getElementById('debtAmount').value);
+  const date = document.getElementById('debtDate').value;
+  const notes = document.getElementById('debtNotes').value.trim();
+  if (!customer || !stationId || isNaN(amount) || amount <= 0) { showToast('الرجاء إدخال بيانات صحيحة', 'error'); return; }
+  if (editId) {
+    const dx = data.debts.find(x => x.id === parseInt(editId));
+    if (dx) { dx.customer = customer; dx.stationId = stationId; dx.amount = amount; dx.date = date; dx.notes = notes; }
+    showToast(t('toastDebtUpdated'), 'success');
+    addLog('edit_debt', 'Updated debt #'+editId);
+  } else {
+    data.debts.push({ id: debtIdCounter++, customer, stationId, amount, paid: 0, remaining: amount, date, notes });
+    showToast(t('toastDebtAdded'), 'success');
+    addLog('save_debt', 'Debt '+customer+' '+amount);
+  }
+  saveData(data); closeModal('debtModal'); renderDebts(); renderHome();
+}
+function editDebt(id) { const d = data.debts.find(x => x.id === id); if (d) openDebtModal(d); }
+function deleteDebt(id) {
+  if (!requireAdmin()) return;
+  if (!confirm(t('confirmDeleteDebt'))) return;
+  data.debts = data.debts.filter(x => x.id !== id);
+  data.debtPayments = (data.debtPayments || []).filter(p => p.debtId !== id);
+  saveData(data); renderDebts(); renderHome();
+  showToast(t('toastDebtDeleted'), 'success'); addLog('delete_debt', 'Deleted debt #'+id);
+}
+function addDebtPayment(debtId) {
+  const d = data.debts.find(x => x.id === debtId);
+  if (!d) return;
+  const remaining = d.remaining !== undefined ? d.remaining : (d.amount - (d.paid || 0));
+  const amtStr = prompt(t('paymentAmount') + ' (المتبقي: ' + remaining + ')', '0');
+  if (!amtStr) return;
+  const amt = parseFloat(amtStr);
+  if (isNaN(amt) || amt <= 0) return;
+  d.paid = (d.paid || 0) + amt;
+  d.remaining = Math.max(0, (d.amount - d.paid));
+  const now = new Date().toISOString().slice(0, 10);
+  if (!data.debtPayments) data.debtPayments = [];
+  data.debtPayments.push({ id: paymentIdCounter++, debtId, amount: amt, date: now });
+  saveData(data); renderDebts(); renderHome();
+  showToast(t('toastPaymentAdded'), 'success'); addLog('payment_debt', 'Payment '+amt+' debt #'+debtId);
+}
+
+// ====== SHIFTS ======
+function renderShifts() {
+  const list = document.getElementById('shiftList');
+  const stationFilter = document.getElementById('shiftFilterStation');
+  const dateFilter = document.getElementById('shiftFilterDate');
+  const filterId = stationFilter.value ? parseInt(stationFilter.value) : null;
+  const filterDate = dateFilter.value;
+  let items = data.shifts || [];
+  if (filterId) items = items.filter(s => s.stationId === filterId);
+  if (filterDate) items = items.filter(s => s.date === filterDate);
+  list.innerHTML = '';
+  if (!items.length) { list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);">' + t('noShifts') + '</div>'; return; }
+  items.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0)).forEach(s => {
+    const st = data.stations.find(x => x.id === s.stationId);
+    const emp = data.employees.find(x => x.id === s.employeeId);
+    const div = document.createElement('div');
+    div.className = 'employee-item';
+    div.innerHTML = `
+      <div class="employee-info" style="flex-direction:column;align-items:flex-start;">
+        <div><strong>${emp ? emp.name : '-'}</strong> <span style="font-size:12px;color:var(--text-muted);">${s.period || ''}</span></div>
+        <div style="font-size:13px;color:var(--text-muted);">${st ? st.name : '-'} | ${s.date || ''} | ${s.shiftIn || ''} - ${s.shiftOut || ''}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="btn btn-sm btn-outline" onclick="editShift(${s.id})">${t('edit')}</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteShift(${s.id})">${t('delete')}</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+function openShiftModal(s) {
+  if (!requireAdmin()) return;
+  document.getElementById('shiftEditId').value = s ? s.id : '';
+  document.getElementById('shiftModalTitle').textContent = s ? t('editShift') : t('addShift');
+  const stationSelect = document.getElementById('shiftStation');
+  stationSelect.innerHTML = '';
+  data.stations.forEach(st => {
+    const opt = document.createElement('option'); opt.value = st.id; opt.textContent = st.name; stationSelect.appendChild(opt);
+  });
+  const empSelect = document.getElementById('shiftEmployee');
+  empSelect.innerHTML = '';
+  data.employees.forEach(e => {
+    const opt = document.createElement('option'); opt.value = e.id; opt.textContent = e.name; empSelect.appendChild(opt);
+  });
+  if (s) {
+    stationSelect.value = s.stationId;
+    empSelect.value = s.employeeId;
+    document.getElementById('shiftPeriod').value = s.period || 'صباحي';
+    document.getElementById('shiftDate').value = s.date || '';
+    document.getElementById('shiftIn').value = s.shiftIn || '';
+    document.getElementById('shiftOut').value = s.shiftOut || '';
+  } else {
+    stationSelect.value = data.stations[0]?.id || '';
+    empSelect.value = '';
+    document.getElementById('shiftPeriod').value = 'صباحي';
+    document.getElementById('shiftDate').value = new Date().toISOString().slice(0, 10);
+    document.getElementById('shiftIn').value = '08:00';
+    document.getElementById('shiftOut').value = '16:00';
+  }
+  openModal('shiftModal');
+}
+function saveShift() {
+  if (!requireAdmin()) return;
+  const editId = document.getElementById('shiftEditId').value;
+  const stationId = parseInt(document.getElementById('shiftStation').value);
+  const employeeId = parseInt(document.getElementById('shiftEmployee').value);
+  const period = document.getElementById('shiftPeriod').value;
+  const date = document.getElementById('shiftDate').value;
+  const shiftIn = document.getElementById('shiftIn').value;
+  const shiftOut = document.getElementById('shiftOut').value;
+  if (!stationId || !employeeId) { showToast('الرجاء اختيار المحطة والموظف', 'error'); return; }
+  if (editId) {
+    const sx = data.shifts.find(x => x.id === parseInt(editId));
+    if (sx) { sx.stationId = stationId; sx.employeeId = employeeId; sx.period = period; sx.date = date; sx.shiftIn = shiftIn; sx.shiftOut = shiftOut; }
+    showToast(t('toastShiftUpdated'), 'success');
+  } else {
+    data.shifts.push({ id: shiftIdCounter++, stationId, employeeId, period, date, shiftIn, shiftOut });
+    showToast(t('toastShiftAdded'), 'success');
+    addLog('save_shift', 'Shift '+period+' emp #'+employeeId);
+  }
+  saveData(data); closeModal('shiftModal'); renderShifts();
+}
+function editShift(id) { const s = data.shifts.find(x => x.id === id); if (s) openShiftModal(s); }
+function deleteShift(id) {
+  if (!requireAdmin()) return;
+  if (!confirm(t('confirmDeleteShift'))) return;
+  data.shifts = data.shifts.filter(x => x.id !== id);
+  saveData(data); renderShifts();
+  showToast(t('toastShiftDeleted'), 'success'); addLog('delete_shift', 'Deleted shift #'+id);
+}
+
+// ====== ANALYTICS ======
+function renderAnalytics(days) {
+  const now = new Date();
+  const start = new Date(now); start.setDate(start.getDate() - days);
+  const salesFiltered = data.sales.filter(s => new Date(s.date) >= start);
+  const totalSales = salesFiltered.reduce((s, x) => s + x.total, 0);
+  const totalLiters = salesFiltered.reduce((s, x) => s + x.quantity, 0);
+  // Expenses in period
+  const expFiltered = data.expenses.filter(e => e.date && new Date(e.date) >= start);
+  const totalExp = expFiltered.reduce((s, e) => s + (e.amount || 0), 0);
+  const profit = totalSales - totalExp;
+  document.getElementById('analyticsTotalSales').textContent = fmtNum(totalSales, 2) + ' ' + t('currency');
+  document.getElementById('analyticsTotalLiters').textContent = fmtNum(totalLiters, 1) + ' ' + t('liter');
+  document.getElementById('analyticsTotalExpenses').textContent = fmtNum(totalExp, 2) + ' ' + t('currency');
+  document.getElementById('analyticsNetProfit').textContent = fmtNum(profit, 2) + ' ' + t('currency');
+  // Build chart data by day
+  const dayMap = {};
+  for (let i = 0; i < days; i++) {
+    const d = new Date(now); d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    dayMap[key] = 0;
+  }
+  salesFiltered.forEach(s => {
+    const key = s.date ? s.date.slice(0, 10) : '';
+    if (dayMap[key] !== undefined) dayMap[key] += s.total;
+  });
+  const labels = Object.keys(dayMap).sort();
+  const values = labels.map(k => dayMap[k]);
+  const canvas = document.getElementById('salesChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  canvas.width = canvas.offsetWidth * 2;
+  canvas.height = 300 * 2;
+  ctx.scale(1, 1);
+  const W = canvas.width, H = canvas.height;
+  const max = Math.max(...values, 1);
+  const barW = Math.max(8, (W - 80) / labels.length - 4);
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+  ctx.fillRect(0, 0, W, H);
+  ctx.font = '20px sans-serif';
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim();
+  ctx.textAlign = 'right';
+  ctx.fillText(fmtNum(max), W - 20, 60);
+  ctx.fillText('0', W - 20, H - 40);
+  const padW = Math.max(12, (W - 80) / labels.length - 6);
+  const barColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#F18904';
+  values.forEach((v, i) => {
+    const x = 40 + i * (padW + 6);
+    const barH = Math.max(2, (v / max) * (H - 100));
+    ctx.fillStyle = barColor;
+    ctx.fillRect(x, H - 40 - barH, padW, barH);
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim();
+    ctx.font = '16px sans-serif';
+    ctx.textAlign = 'center';
+    const short = labels[i].slice(5);
+    ctx.fillText(short, x + padW / 2, H - 10);
+  });
+}
+
 // ====== REPORTS ======
 function generateReport(type) {
   const now = new Date();
@@ -4183,6 +4980,9 @@ function deleteStation(stationId) {
   data.sales = data.sales.filter(s => s.stationId !== stationId);
   data.dailyReadings = (data.dailyReadings || []).filter(r => r.stationId !== stationId);
   data.fuelOrders = (data.fuelOrders || []).filter(o => o.stationId !== stationId);
+  data.expenses = (data.expenses || []).filter(e => e.stationId !== stationId);
+  data.debts = (data.debts || []).filter(d => d.stationId !== stationId);
+  data.shifts = (data.shifts || []).filter(s => s.stationId !== stationId);
   saveData(data);
   renderSettings();
   if (typeof renderStations === 'function') renderStations();
