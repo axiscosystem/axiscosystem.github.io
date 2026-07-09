@@ -39,19 +39,84 @@ if ('serviceWorker' in navigator) {
   --bg-card: #fff9f0;
 }
 [data-theme="dark"] {
-  --bg: #0f172a;
-  --card: #1e293b;
-  --bg-card: #243044;
-  --text: #f1f5f9;
-  --text-muted: #94a3b8;
-  --border: #334155;
+  --bg: #0f172a; --card: #1e293b; --bg-card: #243044;
+  --text: #f1f5f9; --text-muted: #94a3b8; --border: #334155;
   --overlay: rgba(15,23,42,0.88);
-  --sidebar-bg: linear-gradient(180deg, #0a0a1a 0%, #1a1a3a 50%, #0a0a1a 100%);
-  --sidebar-text: #a0a0c0;
-  --sidebar-active: #F18904;
-  --thead-bg: linear-gradient(180deg, #1a1a3a 0%, #2a2a4a 50%, #1a1a3a 100%);
+  --sidebar-bg: linear-gradient(180deg,#0a0a1a 0%,#1a1a3a 50%,#0a0a1a 100%);
+  --sidebar-text: #a0a0c0; --sidebar-active: #F18904;
+  --thead-bg: linear-gradient(180deg,#1a1a3a 0%,#2a2a4a 50%,#1a1a3a 100%);
   --hover-bg: #1e293b;
 }
+[data-theme="green"] {
+  --primary: #1a8a3f; --primary-light: #4ade80; --primary-dark: #166534;
+  --accent: #e11d48; --accent-hover: #be123c;
+  --bg: #f0fdf4; --card: #ffffff; --bg-card: #f0fdf4;
+  --text: #1a1a2e; --text-muted: #6b7280; --border: #bbf7d0;
+  --overlay: rgba(240,253,244,0.85);
+  --sidebar-bg: linear-gradient(180deg,#052e16 0%,#166534 50%,#052e16 100%);
+  --sidebar-text: #ccc; --sidebar-active: #4ade80;
+  --thead-bg: linear-gradient(180deg,#052e16 0%,#166534 50%,#052e16 100%);
+  --hover-bg: #f0fdf4;
+}
+[data-theme="blue"] {
+  --primary: #2563eb; --primary-light: #60a5fa; --primary-dark: #1d4ed8;
+  --accent: #f59e0b; --accent-hover: #d97706;
+  --bg: #eff6ff; --card: #ffffff; --bg-card: #eff6ff;
+  --text: #1a1a2e; --text-muted: #6b7280; --border: #bfdbfe;
+  --overlay: rgba(239,246,255,0.85);
+  --sidebar-bg: linear-gradient(180deg,#172554 0%,#1e40af 50%,#172554 100%);
+  --sidebar-text: #ccc; --sidebar-active: #60a5fa;
+  --thead-bg: linear-gradient(180deg,#172554 0%,#1e40af 50%,#172554 100%);
+  --hover-bg: #eff6ff;
+}
+[data-theme="gold"] {
+  --primary: #b8860b; --primary-light: #fbbf24; --primary-dark: #92400e;
+  --accent: #dc2626; --accent-hover: #b91c1c;
+  --bg: #fffbeb; --card: #ffffff; --bg-card: #fffbeb;
+  --text: #1a1a2e; --text-muted: #6b7280; --border: #fde68a;
+  --overlay: rgba(255,251,235,0.85);
+  --sidebar-bg: linear-gradient(180deg,#451a03 0%,#78350f 50%,#451a03 100%);
+  --sidebar-text: #ccc; --sidebar-active: #fbbf24;
+  --thead-bg: linear-gradient(180deg,#451a03 0%,#78350f 50%,#451a03 100%);
+  --hover-bg: #fffbeb;
+}
+[data-theme="rose"] {
+  --primary: #e11d48; --primary-light: #fb7185; --primary-dark: #be123c;
+  --accent: #8b5cf6; --accent-hover: #7c3aed;
+  --bg: #fff1f2; --card: #ffffff; --bg-card: #fff1f2;
+  --text: #1a1a2e; --text-muted: #6b7280; --border: #fecdd3;
+  --overlay: rgba(255,241,242,0.85);
+  --sidebar-bg: linear-gradient(180deg,#4c0519 0%,#9f1239 50%,#4c0519 100%);
+  --sidebar-text: #ccc; --sidebar-active: #fb7185;
+  --thead-bg: linear-gradient(180deg,#4c0519 0%,#9f1239 50%,#4c0519 100%);
+  --hover-bg: #fff1f2;
+}
+[data-theme="cartoon"] {
+  --primary: #ff6b35; --primary-light: #ff9f1c; --primary-dark: #e63946;
+  --accent: #7b2cbf; --accent-hover: #9d4edd;
+  --bg: #f8f9fa; --card: #ffffff; --bg-card: #fff7ed;
+  --text: #2d3748; --text-muted: #718096; --border: #ffd6a5;
+  --overlay: rgba(248,249,250,0.85);
+  --sidebar-bg: linear-gradient(180deg,#ff6b35 0%,#e63946 50%,#7b2cbf 100%);
+  --sidebar-text: #ffffff; --sidebar-active: #ff9f1c;
+  --thead-bg: linear-gradient(180deg,#ff6b35 0%,#e63946 50%,#7b2cbf 100%);
+  --hover-bg: #fff7ed;
+}
+[data-theme="cartoon"] body { font-family: 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', cursive, sans-serif; }
+[data-theme="cartoon"] .btn { border: 3px solid #333; box-shadow: 4px 4px 0 #333; transform: translate(0,0); transition: all 0.1s; }
+[data-theme="cartoon"] .btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #333; }
+[data-theme="cartoon"] .btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 #333; }
+[data-theme="cartoon"] .section { border: 3px solid #333; border-radius: 20px; }
+[data-theme="cartoon"] .station-card, [data-theme="cartoon"] .employee-item { border: 3px solid #333; border-radius: 16px; box-shadow: 4px 4px 0 #333; }
+[data-theme="cartoon"] .sidebar { border: 3px solid #333; border-radius: 0 20px 20px 0; }
+[data-theme="cartoon"] .modal { border: 3px solid #333; border-radius: 20px; box-shadow: 8px 8px 0 #333; }
+[data-theme="cartoon"] input, [data-theme="cartoon"] select { border: 3px solid #333 !important; border-radius: 12px !important; }
+[data-theme="cartoon"] .tank-card { border: 3px solid #333; border-radius: 16px; box-shadow: 4px 4px 0 #333; }
+[data-theme="cartoon"] .chart-card { border: 3px solid #333; border-radius: 16px; box-shadow: 4px 4px 0 #333; }
+[data-theme="cartoon"] .topbar { border-bottom: 3px solid #333; }
+[data-theme="cartoon"] .station-number { border: 3px solid #333; }
+[data-theme="cartoon"] .nav-item { border-radius: 12px; }
+[data-theme="cartoon"] .notif-item { border-radius: 12px; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   font-family: 'Segoe UI', Tahoma, sans-serif;
@@ -898,6 +963,10 @@ tr:hover td { background: var(--hover-bg); }
         <button class="topbar-lang" id="navBackBtn" onclick="goBack()" disabled style="opacity:0.4;font-size:14px;padding:4px 8px;" title="رجوع">&#9664;</button>
         <button class="topbar-lang" id="navFwdBtn" onclick="goForward()" disabled style="opacity:0.4;font-size:14px;padding:4px 8px;" title="تقديم">&#9654;</button>
       </div>
+      <div style="position:relative;flex:1;max-width:300px;margin:0 8px;">
+        <input type="text" id="globalSearch" placeholder="🔍 بحث..." data-i18n-placeholder="search" style="width:100%;padding:6px 14px;border:1px solid var(--border);border-radius:20px;font-size:12px;font-family:inherit;outline:none;background:var(--card);color:var(--text);" oninput="onGlobalSearch(this.value)" onblur="setTimeout(()=>{const el=document.getElementById('searchResults');if(el)el.style.display='none'},200)" onfocus="if(this.value)onGlobalSearch(this.value)">
+        <div id="searchResults" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.15);z-index:999;max-height:300px;overflow-y:auto;margin-top:4px;"></div>
+      </div>
       <div>
         <img src="axisco-logo.jpeg" alt="axisco" style="height:36px;width:auto;display:block;">
         <div class="date" id="currentDate" style="margin-top:4px;"></div>
@@ -908,7 +977,15 @@ tr:hover td { background: var(--hover-bg); }
           <span id="notifBadge" style="display:none;position:absolute;top:-2px;inset-inline-end:-2px;background:var(--danger);color:white;border-radius:50%;width:16px;height:16px;font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:700;border:1.5px solid white;"></span>
           <div id="notifPanel" style="display:none;position:absolute;top:100%;inset-inline-end:0;width:300px;max-height:360px;overflow-y:auto;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.15);z-index:999;padding:8px;margin-top:4px;"></div>
         </div>
-        <button class="topbar-lang" onclick="toggleDarkMode()" id="darkModeBtn" title="Dark Mode">🌙</button>
+        <select class="topbar-lang" id="themeSelector" onchange="setTheme(this.value)" style="font-size:11px;padding:4px 6px;cursor:pointer;max-width:70px;">
+          <option value="light">☀️</option>
+          <option value="dark">🌙</option>
+          <option value="green">💚</option>
+          <option value="blue">💙</option>
+          <option value="gold">💛</option>
+          <option value="rose">🩷</option>
+          <option value="cartoon">🎨</option>
+        </select>
         <button class="topbar-lang" onclick="toggleLang()" id="topbarLangBtn">English</button>
         <div class="user-badge">
           <span id="userDisplay">فاصل</span>
@@ -1466,13 +1543,6 @@ const i18n = {
     productId: 'الرقم',
     station: 'المحطة',
     currency: 'ر.س',
-    editPriceTitle: 'تعديل سعر الوقود',
-    addPriceTitle: 'إضافة سعر وقود',
-    editEmpTitle: 'تعديل بيانات موظف',
-    addEmpTitle: 'إضافة موظف',
-    dailyReport: 'تقرير يومي',
-    capacity: 'السعة',
-    currentLevel: 'المستوى',
     // Archive
     archiveData: 'أرشفة البيانات',
     restoreArchive: 'استعادة الأرشيف',
@@ -1704,12 +1774,6 @@ const i18n = {
     station: 'Station',
     currency: 'SAR',
     editPriceTitle: 'Edit Fuel Price',
-    addPriceTitle: 'Add Fuel Price',
-    editEmpTitle: 'Edit Employee',
-    addEmpTitle: 'Add Employee',
-    dailyReport: 'Daily Report',
-    capacity: 'Capacity',
-    currentLevel: 'Level',
     // Archive
     archiveData: 'Archive Data',
     restoreArchive: 'Restore Archive',
@@ -1845,28 +1909,17 @@ function getLogoBase64() {
   } catch(e) { return ''; }
 }
 
-function toggleDarkMode() {
+function setTheme(theme) {
   const html = document.getElementById('htmlTag');
-  const isDark = html.getAttribute('data-theme') === 'dark';
-  if (isDark) {
-    html.removeAttribute('data-theme');
-    localStorage.setItem('axisco_theme', 'light');
-    document.getElementById('darkModeBtn').textContent = '🌙';
-  } else {
-    html.setAttribute('data-theme', 'dark');
-    localStorage.setItem('axisco_theme', 'dark');
-    document.getElementById('darkModeBtn').textContent = '☀️';
-  }
+  if (theme === 'light') html.removeAttribute('data-theme');
+  else html.setAttribute('data-theme', theme);
+  localStorage.setItem('axisco_theme', theme);
 }
 function initTheme() {
-  const saved = localStorage.getItem('axisco_theme');
-  const btn = document.getElementById('darkModeBtn');
-  if (saved === 'dark') {
-    document.getElementById('htmlTag').setAttribute('data-theme', 'dark');
-    btn.textContent = '☀️';
-  } else {
-    btn.textContent = '🌙';
-  }
+  const saved = localStorage.getItem('axisco_theme') || 'light';
+  const sel = document.getElementById('themeSelector');
+  if (sel) sel.value = saved;
+  setTheme(saved);
 }
 function setLang(lang) {
   currentLang = lang;
@@ -2056,7 +2109,7 @@ function saveData(data) {
   localStorage.setItem(STORE_KEY, JSON.stringify(data));
   clearTimeout(serverTimer);
   serverTimer = setTimeout(() => {
-    fetch('/api/data', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    fetch('/api/data', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).catch(() => {});
   }, 500);
 }
 
@@ -2109,16 +2162,69 @@ let data, stationIdCounter, priceIdCounter, tankIdCounter, saleIdCounter, empIdC
 
 // ====== SEARCH HELPERS ======
 function filterTable(input, tbodyId) {
+  const el = document.getElementById(tbodyId);
+  if (!el) return;
   const q = input.value.toLowerCase();
-  document.getElementById(tbodyId).querySelectorAll('tr').forEach(tr => {
+  el.querySelectorAll('tr').forEach(tr => {
     tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
   });
 }
 function filterDivs(input, containerId) {
-  const q = input.value.toLowerCase();
+  if (!document.getElementById(containerId)) return;
+  const q = (typeof input === 'string' ? input : input.value).toLowerCase();
   document.getElementById(containerId).querySelectorAll('> div').forEach(d => {
     d.style.display = d.textContent.toLowerCase().includes(q) ? '' : 'none';
   });
+}
+function onGlobalSearch(q) {
+  q = q.toLowerCase().trim();
+  const res = document.getElementById('searchResults');
+  if (!res) return;
+  if (!q) { res.style.display = 'none'; return; }
+  const results = [];
+  // Search stations
+  (data.stations || []).forEach(s => {
+    if (s.name.toLowerCase().includes(q) || (s.location || '').toLowerCase().includes(q))
+      results.push({ label: `🏪 ${s.name} (${s.location})`, section: 'stations' });
+  });
+  // Search tanks
+  (data.tanks || []).forEach(t => {
+    const s = data.stations.find(st => st.id === t.stationId);
+    if (tfuel(t.name).toLowerCase().includes(q))
+      results.push({ label: `🛢️ ${tfuel(t.name)} - ${s ? s.name : '?'}`, section: 'tanks' });
+  });
+  // Search employees
+  (data.employees || []).forEach(e => {
+    if (e.name.toLowerCase().includes(q) || trole(e.role).toLowerCase().includes(q))
+      results.push({ label: `👤 ${e.name} (${trole(e.role)})`, section: 'employees' });
+  });
+  // Search fuel orders
+  (data.fuelOrders || []).forEach(o => {
+    const s = data.stations.find(st => st.id === o.stationId);
+    const txt = `${tfuel(o.fuelType)} ${s ? s.name : ''} ${t(o.status)} ${fmtNum(o.quantity)}`;
+    if (txt.toLowerCase().includes(q))
+      results.push({ label: `📦 #${o.id} ${tfuel(o.fuelType)} ${s ? s.name : '?'}`, section: 'fuelorders' });
+  });
+  // Search prices
+  (data.prices || []).forEach(p => {
+    if (tfuel(p.type).toLowerCase().includes(q))
+      results.push({ label: `💰 ${tfuel(p.type)}: ${fmtNum(p.price,2)} ${t('currency')}`, section: 'prices' });
+  });
+  // Search sales
+  (data.sales || []).forEach(sl => {
+    const s = data.stations.find(st => st.id === sl.stationId);
+    const txt = `${tfuel(sl.fuelType)} ${s ? s.name : ''} ${fmtNum(sl.quantity)}`;
+    if (txt.toLowerCase().includes(q))
+      results.push({ label: `🧾 ${tfuel(sl.fuelType)} ${fmtNum(sl.quantity)}L - ${s ? s.name : '?'}`, section: 'sales' });
+  });
+  if (!results.length) {
+    res.innerHTML = `<div style="padding:12px;text-align:center;color:var(--text-muted);font-size:13px;">${t('noData')}</div>`;
+    res.style.display = 'block'; return;
+  }
+  res.innerHTML = results.slice(0, 15).map(r =>
+    `<div style="padding:10px 14px;cursor:pointer;border-radius:6px;font-size:13px;display:flex;align-items:center;gap:8px;" onmouseenter="this.style.background='var(--hover-bg)'" onmouseleave="this.style.background=''" onclick="showSection('${r.section}');document.getElementById('searchResults').style.display='none';document.getElementById('globalSearch').value=''">${r.label}</div>`
+  ).join('');
+  res.style.display = 'block';
 }
 // ====== ACTIVITY LOG ======
 function addLog(action, details) {
@@ -2250,6 +2356,7 @@ function clearAllData() {
   data.stations = []; data.prices = []; data.tanks = [];
   data.sales = []; data.employees = []; data.fuelOrders = [];
   data.dailyReadings = []; data.activityLog = [];
+  data.fuelTypes = []; data.empRoles = []; data.archivedData = null;
   saveData(data);
   initDashboard();
   showToast(t('clearAllData'), 'success');
@@ -2798,10 +2905,10 @@ function saveReading(stationId, silent) {
   const date = header.querySelector('.read-date').value;
   const day = header.querySelector('.read-day').value;
   const time = header.querySelector('.read-time').value;
+  if (!date || !time) { if (!silent) showToast(t('toastValid'),'error'); return; }
   if (!data.dailyReadings) data.dailyReadings = [];
-  const today = new Date().toDateString();
-  // Remove existing reading for this station today
-  data.dailyReadings = data.dailyReadings.filter(r => !(r.stationId === stationId && new Date(r.date).toDateString() === today));
+  // Remove existing reading for this station with same date
+  data.dailyReadings = data.dailyReadings.filter(r => !(r.stationId === stationId && r.date && r.date.startsWith(date)));
   const tanks = [];
   data.tanks.filter(t => t.stationId === stationId).forEach(t => {
     const cap = getNumInput(document.querySelector(`.cap-${t.id}`));
@@ -2875,7 +2982,8 @@ function renderNotifications() {
   const readStationIds = new Set((data.dailyReadings || []).filter(r => new Date(r.date).toDateString() === today).map(r => r.stationId));
   (data.stations || []).forEach(s => {
     if (!readStationIds.has(s.id)) {
-      alerts.push({ icon: '📋', title: t('noReadings').replace('هذه المحطة', ''), desc: s.name });
+      const noReadTitle = currentLang === 'ar' ? t('noReadings').replace('هذه المحطة', '').trim() : t('noReadings').replace(/ for .*/, '');
+      alerts.push({ icon: '📋', title: noReadTitle, desc: s.name });
     }
   });
   // Update badge
@@ -2971,6 +3079,7 @@ function printInvoice(id, type) {
   }
   if (!item) return;
   const w = window.open('', '_blank');
+  if (!w) { showToast(t('noData'), 'error'); return; }
   w.document.write(`<html><head><meta charset="UTF-8"><title>axisco - ${title}</title><style>
     body{font-family:sans-serif;padding:20px;color:#000;}
     .invoice{max-width:700px;margin:0 auto;background:white;padding:30px;}
@@ -3051,6 +3160,87 @@ function exportSectionPDF(stationId) {
   const w = window.open('', '_blank');
   if (!w) { showToast(t('noData'), 'error'); return; }
   w.document.write(`<html><head><title>axisco</title></head><body>${html}<script>window.print();<\/script></body></html>`);
+  w.document.close();
+}
+
+function printTankPDF(tankId) {
+  const tank = data.tanks.find(t => t.id === tankId);
+  if (!tank) return;
+  const s = data.stations.find(st => st.id === tank.stationId);
+  const pct = Math.round((tank.level / tank.capacity) * 100);
+  const logoB64 = getLogoBase64();
+  const dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+  const html = `
+    <div style="direction:${dir};font-family:Segoe UI,Tahoma,sans-serif;max-width:500px;margin:0 auto;padding:20px;text-align:center;">
+      <div style="border-bottom:3px solid #F18904;padding-bottom:10px;margin-bottom:16px;">
+        <img src="${logoB64}" alt="axisco" style="height:50px;width:auto;display:block;margin:0 auto 8px;">
+        <h1 style="color:#F18904;margin:0;font-size:22px;">axisco</h1>
+      </div>
+      <h2 style="color:#333;">${s ? s.name : '?'}</h2>
+      <table style="width:100%;border-collapse:collapse;margin:16px 0;">
+        <tr><td style="padding:8px;border:1px solid #ddd;font-weight:700;background:#f5f5f5;">${t('fuelType')}</td><td style="padding:8px;border:1px solid #ddd;">${tfuel(tank.name)}</td></tr>
+        <tr><td style="padding:8px;border:1px solid #ddd;font-weight:700;background:#f5f5f5;">${t('capacity')}</td><td style="padding:8px;border:1px solid #ddd;">${fmtNum(tank.capacity)} L</td></tr>
+        <tr><td style="padding:8px;border:1px solid #ddd;font-weight:700;background:#f5f5f5;">${t('currentLevel')}</td><td style="padding:8px;border:1px solid #ddd;">${fmtNum(tank.level)} L</td></tr>
+        <tr><td style="padding:8px;border:1px solid #ddd;font-weight:700;background:#f5f5f5;">${t('sumCol')}</td><td style="padding:8px;border:1px solid #ddd;">${pct}% ${t('liter')}</td></tr>
+      </table>
+      <div style="width:100%;height:40px;background:#eee;border-radius:20px;overflow:hidden;position:relative;">
+        <div style="height:100%;width:${pct}%;background:${pct > 60 ? '#22A32F' : pct > 25 ? '#F18904' : '#F30503'};border-radius:20px;"></div>
+        <span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-weight:700;font-size:16px;color:${pct > 50 ? 'white' : '#333'};">${pct}%</span>
+      </div>
+      <p style="color:#999;font-size:11px;margin-top:20px;">${fmtDate(new Date(), { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}</p>
+    </div>
+  `;
+  const w = window.open('', '_blank');
+  if (!w) { showToast(t('noData'), 'error'); return; }
+  w.document.write(`<html><head><meta charset="UTF-8"><title>axisco - ${tfuel(tank.name)}</title></head><body>${html}<script>window.print();<\/script></body></html>`);
+  w.document.close();
+}
+
+function printStationTanksPDF(stationId) {
+  const s = data.stations.find(st => st.id === stationId);
+  const tanks = (data.tanks || []).filter(t => t.stationId === stationId);
+  if (!tanks.length) return;
+  const logoB64 = getLogoBase64();
+  const dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+  let rows = '';
+  tanks.forEach(t => {
+    const pct = Math.round((t.level / t.capacity) * 100);
+    const barColor = pct > 60 ? '#22A32F' : pct > 25 ? '#F18904' : '#F30503';
+    rows += `
+      <tr>
+        <td style="padding:10px;border:1px solid #ddd;text-align:center;">${tfuel(t.name)}</td>
+        <td style="padding:10px;border:1px solid #ddd;text-align:center;">${fmtNum(t.capacity)} L</td>
+        <td style="padding:10px;border:1px solid #ddd;text-align:center;">${fmtNum(t.level)} L</td>
+        <td style="padding:10px;border:1px solid #ddd;text-align:center;">
+          <div style="width:100%;height:20px;background:#eee;border-radius:10px;overflow:hidden;position:relative;">
+            <div style="height:100%;width:${pct}%;background:${barColor};border-radius:10px;"></div>
+            <span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-weight:700;font-size:11px;color:${pct > 50 ? 'white' : '#333'};">${pct}%</span>
+          </div>
+        </td>
+      </tr>`;
+  });
+  const html = `
+    <div style="direction:${dir};font-family:Segoe UI,Tahoma,sans-serif;max-width:700px;margin:0 auto;padding:20px;">
+      <div style="text-align:center;border-bottom:3px solid #F18904;padding-bottom:10px;margin-bottom:16px;">
+        <img src="${logoB64}" alt="axisco" style="height:50px;width:auto;display:block;margin:0 auto 8px;">
+        <h1 style="color:#F18904;margin:0;font-size:22px;">axisco</h1>
+        <h2 style="color:#333;margin:8px 0 0;">${s ? s.name : '?'}</h2>
+      </div>
+      <table style="width:100%;border-collapse:collapse;">
+        <thead><tr style="background:#F18904;color:white;">
+          <th style="padding:10px;border:1px solid #ddd;">${t('fuelType')}</th>
+          <th style="padding:10px;border:1px solid #ddd;">${t('capacity')}</th>
+          <th style="padding:10px;border:1px solid #ddd;">${t('currentLevel')}</th>
+          <th style="padding:10px;border:1px solid #ddd;">${t('sumCol')}</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <p style="color:#999;font-size:11px;text-align:center;margin-top:20px;">${fmtDate(new Date(), { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}</p>
+    </div>
+  `;
+  const w = window.open('', '_blank');
+  if (!w) { showToast(t('noData'), 'error'); return; }
+  w.document.write(`<html><head><meta charset="UTF-8"><title>axisco - ${s ? s.name : '?'}</title></head><body>${html}<script>window.print();<\/script></body></html>`);
   w.document.close();
 }
 
@@ -3276,14 +3466,17 @@ function approveFuelOrder(id) {
   const order = data.fuelOrders.find(o => o.id === id);
   if (order) {
     order.status = 'delivered';
-    const tank = data.tanks.find(t => t.stationId === order.stationId && t.fuelType === order.fuelType);
-    if (tank) tank.level = Math.min(tank.capacity, tank.level + order.quantity);
+    data.tanks.filter(t => t.stationId === order.stationId && t.fuelType === order.fuelType).forEach(tank => {
+      tank.level = Math.min(tank.capacity, tank.level + order.quantity);
+    });
     // Sync daily reading
     const today = new Date().toDateString();
     const reading = data.dailyReadings?.find(r => r.stationId === order.stationId && new Date(r.date).toDateString() === today);
-    if (reading && tank) {
-      const rt = reading.tanks.find(t => t.tankId === tank.id);
-      if (rt) { rt.remaining = tank.level; rt.total = rt.remaining + (rt.sold || 0); }
+    if (reading) {
+      data.tanks.filter(t => t.stationId === order.stationId && t.fuelType === order.fuelType).forEach(tank => {
+        const rt = reading.tanks.find(t => t.tankId === tank.id);
+        if (rt) { rt.remaining = tank.level; rt.total = rt.remaining + (rt.sold || 0); }
+      });
     }
     saveData(data);
     renderStations();
@@ -3397,8 +3590,8 @@ function renderTanks() {
     const tanks = byStation[sid];
     const station = data.stations.find(s => s.id === parseInt(sid));
     const header = document.createElement('div');
-    header.style.cssText = 'grid-column:1/-1;font-size:18px;font-weight:700;color:var(--primary);padding:8px 0;border-bottom:2px solid var(--accent);margin-bottom:4px;';
-    header.textContent = station ? station.name : (t('stations') + ' #' + sid);
+    header.style.cssText = 'grid-column:1/-1;font-size:18px;font-weight:700;color:var(--primary);padding:8px 0;border-bottom:2px solid var(--accent);margin-bottom:4px;display:flex;align-items:center;gap:12px;';
+    header.innerHTML = (station ? station.name : (t('stations') + ' #' + sid)) + ` <button class="btn btn-sm" style="background:var(--primary);color:white;font-size:11px;" onclick="printStationTanksPDF(${sid})">PDF ${t('stations')}</button>`;
     grid.appendChild(header);
     tanks.forEach(tk => {
       const pct = Math.round((tk.level / tk.capacity) * 100);
@@ -3412,9 +3605,10 @@ function renderTanks() {
         </div>
         <div class="tank-percent">${pct}%</div>
         <div class="tank-volume">${fmtNum(tk.level)} / ${fmtNum(tk.capacity)} ${t('liter')}</div>
-        <div style="margin-top:12px;display:flex;gap:8px;justify-content:center;">
+        <div style="margin-top:12px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
           <button class="btn btn-sm btn-outline" onclick="editTank(${tk.id})">${t('edit')}</button>
           <button class="btn btn-sm btn-danger" onclick="deleteTank(${tk.id})">${t('delete')}</button>
+          <button class="btn btn-sm" style="background:var(--primary);color:white;" onclick="printTankPDF(${tk.id})">PDF</button>
         </div>
       `;
       grid.appendChild(card);
@@ -3569,14 +3763,17 @@ function saveSale() {
     total: quantity * price,
     employee
   });
-  const tank = data.tanks.find(t => t.stationId === stationId && t.fuelType === fuelType);
-  if (tank) { tank.level = Math.max(0, tank.level - quantity); }
+  data.tanks.filter(t => t.stationId === stationId && t.fuelType === fuelType).forEach(tank => {
+    tank.level = Math.max(0, tank.level - quantity);
+  });
   // Sync daily reading if exists
   const today = new Date().toDateString();
   const reading = data.dailyReadings?.find(r => r.stationId === stationId && new Date(r.date).toDateString() === today);
   if (reading) {
-    const rt = reading.tanks.find(t => t.tankId === tank?.id);
-    if (rt) { rt.sold = (rt.sold || 0) + quantity; rt.remaining = tank ? tank.level : rt.remaining; rt.total = rt.remaining + rt.sold; }
+    data.tanks.filter(t => t.stationId === stationId && t.fuelType === fuelType).forEach(tank => {
+      const rt = reading.tanks.find(t => t.tankId === tank.id);
+      if (rt) { rt.sold = (rt.sold || 0) + quantity; rt.remaining = tank.level; rt.total = rt.remaining + rt.sold; }
+    });
   }
   saveData(data);
   closeModal('saleModal');
@@ -3762,9 +3959,8 @@ function updateStationTank(tankId, field, value) {
 }
 function addStationTank(stationId) {
   if (!requireAdmin()) return;
-  const maxId = data.tanks.length > 0 ? Math.max(...data.tanks.map(t => t.id)) : 0;
   const ft = getFuelTypes()[0] || 'بنزين 91';
-  data.tanks.push({ id: maxId + 1, name: ft, stationId, fuelType: ft, capacity: 50000, level: 25000 });
+  data.tanks.push({ id: tankIdCounter++, name: ft, stationId, fuelType: ft, capacity: 50000, level: 25000 });
   saveData(data);
   renderSettings();
 }
@@ -3800,11 +3996,9 @@ function saveStation() {
     const ftList = getFuelTypes();
     const caps = [50000,40000,60000];
     const levels = [30000,20000,40000];
-    ftList.forEach((ft, i) => {
-      const maxId = data.tanks.length > 0 ? Math.max(...data.tanks.map(t => t.id)) : 0;
-      data.tanks.push({ id: maxId + 1 + i, name: ft, stationId: newId, fuelType: ft, capacity: caps[i] || 50000, level: levels[i] || 25000 });
+    ftList.forEach((ft) => {
+      data.tanks.push({ id: tankIdCounter++, name: ft, stationId: newId, fuelType: ft, capacity: caps[tankIdCounter % caps.length] || 50000, level: levels[tankIdCounter % levels.length] || 25000 });
     });
-    tankIdCounter = data.tanks.length > 0 ? Math.max(...data.tanks.map(t => t.id)) + 1 : 1;
     showToast(t('stationAdded'), 'success');
     addLog('save_station', 'Created station '+name);
   }
@@ -3823,6 +4017,7 @@ function deleteStation(stationId) {
   data.tanks = data.tanks.filter(t => t.stationId !== stationId);
   data.sales = data.sales.filter(s => s.stationId !== stationId);
   data.dailyReadings = (data.dailyReadings || []).filter(r => r.stationId !== stationId);
+  data.fuelOrders = (data.fuelOrders || []).filter(o => o.stationId !== stationId);
   saveData(data);
   renderSettings();
   if (typeof renderStations === 'function') renderStations();
@@ -3836,8 +4031,10 @@ function exportData() {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'axisco-data.json';
+  a.style.display = 'none';
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(a.href);
+  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(a.href); }, 100);
   showToast(t('dataExported'), 'success');
 }
 function importData(e) {
@@ -3850,11 +4047,11 @@ function importData(e) {
       if (!d.stations || d.stations.length === 0) throw new Error('invalid');
       data = d;
       ensureTanks(data);
-      stationIdCounter = data.stations.length + 1;
-      priceIdCounter = data.prices.length + 1;
-      tankIdCounter = data.tanks.length + 1;
-      saleIdCounter = data.sales.length + 1;
-      empIdCounter = data.employees.length + 1;
+      stationIdCounter = (data.stations?.length || 0) + 1;
+      priceIdCounter = (data.prices?.length || 0) + 1;
+      tankIdCounter = (data.tanks?.length || 0) + 1;
+      saleIdCounter = (data.sales?.length || 0) + 1;
+      empIdCounter = (data.employees?.length || 0) + 1;
       fuelOrderIdCounter = (data.fuelOrders?.length || 0) + 1;
       readingIdCounter = (data.dailyReadings?.length || 0) + 1;
       saveData(data);
