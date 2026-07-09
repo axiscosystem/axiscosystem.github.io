@@ -3294,19 +3294,35 @@ function renderStations() {
     div.className = 'station-card';
     const stationTanks = data.tanks.filter(t => t.stationId === s.id);
     const sales = data.sales.filter(sl => sl.stationId === s.id).length || 0;
-    const barColors = { 'بنزين 91': '#F18904', 'بنزين 95': '#FAB347', 'ديزل': '#22A32F' };
     let tanksHtml = '';
     stationTanks.forEach(t => {
       const pct = Math.round((t.level / t.capacity) * 100);
+      const barColor = pct > 60 ? '#22A32F' : pct > 25 ? '#F18904' : '#F30503';
       tanksHtml += `
-        <div style="margin-bottom:6px;">
-          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px;">
-            <span style="font-weight:600;">${tfuel(t.name)}</span>
-            <span>${pct}%</span>
-          </div>
-          <div style="height:18px;background:var(--bg);border-radius:10px;overflow:hidden;position:relative;">
-            <div style="height:100%;width:${pct}%;background:${barColors[t.fuelType] || 'var(--accent)'};border-radius:10px;"></div>
-            <span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:10px;font-weight:600;color:${pct > 40 ? 'white' : 'var(--text)'};">${fmtNum(t.level)}/${fmtNum(t.capacity)}L</span>
+        <div style="margin-bottom:8px;display:flex;align-items:center;gap:8px;">
+          <svg viewBox="0 0 60 34" width="60" height="34" style="flex-shrink:0;">
+            <rect x="3" y="4" width="52" height="22" rx="3" fill="#e8e8e8" stroke="#999" stroke-width="1"/>
+            <ellipse cx="6" cy="15" rx="4" ry="11" fill="#e8e8e8" stroke="#999" stroke-width="1"/>
+            <ellipse cx="54" cy="15" rx="4" ry="11" fill="#e8e8e8" stroke="#999" stroke-width="1"/>
+            <clipPath id="tankClip${t.id}">
+              <rect x="3" y="4" width="52" height="22" rx="3"/>
+              <ellipse cx="6" cy="15" rx="4" ry="11"/>
+              <ellipse cx="54" cy="15" rx="4" ry="11"/>
+            </clipPath>
+            <g clip-path="url(#tankClip${t.id})">
+              <rect x="3" y="${4 + (100 - pct) * 0.22}" width="58" height="${pct * 0.22}" fill="${barColor}" opacity="0.85"/>
+            </g>
+            <image href="axisco-logo.jpeg" x="14" y="7" width="32" height="16" preserveAspectRatio="xMidYMid slice" clip-path="url(#tankClip${t.id})"/>
+            <rect x="3" y="4" width="52" height="22" rx="3" fill="none" stroke="#666" stroke-width="1"/>
+            <ellipse cx="6" cy="15" rx="4" ry="11" fill="none" stroke="#666" stroke-width="1"/>
+            <ellipse cx="54" cy="15" rx="4" ry="11" fill="none" stroke="#666" stroke-width="1"/>
+          </svg>
+          <div style="flex:1;">
+            <div style="display:flex;justify-content:space-between;font-size:11px;">
+              <span style="font-weight:600;">${tfuel(t.name)}</span>
+              <span style="font-weight:700;color:${barColor};">${pct}%</span>
+            </div>
+            <div style="font-size:10px;color:var(--text-muted);">${fmtNum(t.level)}/${fmtNum(t.capacity)}L</div>
           </div>
         </div>
       `;
@@ -3598,14 +3614,48 @@ function renderTanks() {
       const fuelClass = tk.fuelType.includes('بنزين') ? 'gasoline' : tk.fuelType === 'ديزل' ? 'diesel' : 'gas';
       const card = document.createElement('div');
       card.className = 'tank-card';
+      const barColor = pct > 60 ? '#22A32F' : pct > 25 ? '#F18904' : '#F30503';
       card.innerHTML = `
-        <h4>${tfuel(tk.name)}</h4>
-        <div class="tank-bar">
-          <div class="tank-fill ${fuelClass}" style="height:${pct}%"></div>
+        <div style="text-align:center;margin-bottom:8px;">
+          <strong>${tfuel(tk.name)}</strong>
         </div>
-        <div class="tank-percent">${pct}%</div>
-        <div class="tank-volume">${fmtNum(tk.level)} / ${fmtNum(tk.capacity)} ${t('liter')}</div>
-        <div style="margin-top:12px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
+        <div style="width:100%;padding:0 4px;">
+          <svg viewBox="0 0 160 80" width="100%" style="display:block;max-width:160px;margin:0 auto;">
+            <!-- Tank shadow -->
+            <ellipse cx="83" cy="76" rx="72" ry="8" fill="rgba(0,0,0,0.08)"/>
+            <!-- Tank body (back) -->
+            <rect x="8" y="14" width="138" height="50" rx="6" fill="#e8e8e8" stroke="#999" stroke-width="1.5"/>
+            <!-- Left end cap -->
+            <ellipse cx="14" cy="39" rx="8" ry="25" fill="#e8e8e8" stroke="#999" stroke-width="1.5"/>
+            <!-- Right end cap -->
+            <ellipse cx="146" cy="39" rx="8" ry="25" fill="#e8e8e8" stroke="#999" stroke-width="1.5"/>
+            <!-- Fuel fill -->
+            <clipPath id="tankClip${tk.id}">
+              <rect x="8" y="14" width="138" height="50" rx="6"/>
+              <ellipse cx="14" cy="39" rx="8" ry="25"/>
+              <ellipse cx="146" cy="39" rx="8" ry="25"/>
+            </clipPath>
+            <g clip-path="url(#tankClip${tk.id})">
+              <rect x="8" y="${14 + (100 - pct) * 0.5}" width="145" height="${pct * 0.5}" fill="${barColor}" opacity="0.85"/>
+            </g>
+            <!-- Logo on tank -->
+            <image href="axisco-logo.jpeg" x="45" y="22" width="70" height="34" preserveAspectRatio="xMidYMid slice" style="clip-path:url(#tankClip${tk.id})"/>
+            <!-- Tank outline -->
+            <rect x="8" y="14" width="138" height="50" rx="6" fill="none" stroke="#666" stroke-width="1.5"/>
+            <ellipse cx="14" cy="39" rx="8" ry="25" fill="none" stroke="#666" stroke-width="1.5"/>
+            <ellipse cx="146" cy="39" rx="8" ry="25" fill="none" stroke="#666" stroke-width="1.5"/>
+            <!-- Top hatch -->
+            <rect x="70" y="10" width="20" height="6" rx="2" fill="#999" stroke="#666" stroke-width="1"/>
+            <!-- Bottom legs -->
+            <rect x="30" y="64" width="4" height="8" rx="1" fill="#888"/>
+            <rect x="126" y="64" width="4" height="8" rx="1" fill="#888"/>
+          </svg>
+        </div>
+        <div style="text-align:center;margin-top:6px;">
+          <div style="font-size:22px;font-weight:700;color:${barColor};">${pct}%</div>
+          <div style="font-size:11px;color:var(--text-muted);">${fmtNum(tk.level)} / ${fmtNum(tk.capacity)} ${t('liter')}</div>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
           <button class="btn btn-sm btn-outline" onclick="editTank(${tk.id})">${t('edit')}</button>
           <button class="btn btn-sm btn-danger" onclick="deleteTank(${tk.id})">${t('delete')}</button>
           <button class="btn btn-sm" style="background:var(--primary);color:white;" onclick="printTankPDF(${tk.id})">PDF</button>
