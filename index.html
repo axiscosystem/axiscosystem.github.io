@@ -1155,6 +1155,25 @@ tr:hover td { background: var(--hover-bg); }
         </div>
       </div>
 
+      <!-- Cloud Sync Section -->
+      <div class="settings-section" style="margin-top:16px;">
+        <div class="section-header" style="margin-top:0;">
+          <h3 style="font-size:16px;color:var(--primary);">☁️ المزامنة السحابية</h3>
+        </div>
+        <div class="settings-tank-row" style="flex-wrap:wrap;gap:8px;flex-direction:column;align-items:stretch;">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <input type="text" id="cloudURL" placeholder="رابط قاعدة البيانات (Firebase URL)" value="" style="flex:1;min-width:200px;padding:8px 12px;border:2px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;">
+            <input type="password" id="cloudKey" placeholder="مفتاح API (اختياري)" value="" style="width:180px;padding:8px 12px;border:2px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;">
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-sm btn-primary" onclick="saveCloudConfig()">💾 حفظ الإعدادات</button>
+            <button class="btn btn-sm btn-outline" onclick="syncFromCloud()">📥 سحب من السحابة</button>
+            <span id="cloudStatus" style="font-size:12px;color:var(--text-muted);margin-right:8px;"></span>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:4px;" data-i18n="cloudHint">مثال: https://my-project.firebaseio.com/data.json — مجاني عبر Firebase</div>
+        </div>
+      </div>
+
       <!-- Archive Section -->
       <div class="settings-section" style="margin-top:16px;">
         <div class="section-header" style="margin-top:0;">
@@ -1600,6 +1619,8 @@ const i18n = {
     tankFuel: 'نوع الوقود',
     tankCurrent: 'المستوى الحالي',
     toastBulkSent: 'تم إرسال طلبات التموين بنجاح',
+    // Cloud
+    cloudHint: 'مثال: https://my-project.firebaseio.com/data.json — مجاني عبر Firebase',
     // Titles
     exportTooltip: 'تصدير البيانات',
     importTooltip: 'استيراد البيانات',
@@ -1831,6 +1852,8 @@ const i18n = {
     tankFuel: 'Fuel Type',
     tankCurrent: 'Current Level',
     toastBulkSent: 'Fuel requests sent successfully',
+    // Cloud
+    cloudHint: 'e.g. https://my-project.firebaseio.com/data.json — Free via Firebase',
     // Titles
     exportTooltip: 'Export Data',
     importTooltip: 'Import Data',
@@ -2105,15 +2128,72 @@ function ensureTanks(d) {
 }
 
 let serverTimer = null;
+// Cloud config
+let cloudURL = localStorage.getItem('axisco_cloud_url') || '';
+let cloudKey = localStorage.getItem('axisco_cloud_key') || '';
+function setCloudConfig(url, key) {
+  cloudURL = url; cloudKey = key;
+  localStorage.setItem('axisco_cloud_url', url);
+  localStorage.setItem('axisco_cloud_key', key);
+}
 function saveData(data) {
   localStorage.setItem(STORE_KEY, JSON.stringify(data));
-  clearTimeout(serverTimer);
-  serverTimer = setTimeout(() => {
-    fetch('/api/data', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).catch(() => {});
-  }, 500);
+  if (cloudURL) {
+    clearTimeout(serverTimer);
+    serverTimer = setTimeout(() => {
+      const h = { 'Content-Type': 'application/json' };
+      if (cloudKey) h['X-Master-Key'] = cloudKey;
+      fetch(cloudURL, { method: 'PUT', headers: h, body: JSON.stringify(data) }).catch(() => {});
+    }, 1000);
+  }
+}
+
+function saveCloudConfig() {
+  const url = document.getElementById('cloudURL').value.trim();
+  const key = document.getElementById('cloudKey').value.trim();
+  setCloudConfig(url, key);
+  const st = document.getElementById('cloudStatus');
+  st.textContent = url ? '✅ تم حفظ الإعدادات' : 'ℹ️ تم إلغاء المزامنة';
+  setTimeout(() => st.textContent = '', 3000);
+}
+
+async function syncFromCloud() {
+  const st = document.getElementById('cloudStatus');
+  if (!cloudURL) { st.textContent = '⚠️ الرجاء إدخال رابط قاعدة البيانات أولاً'; setTimeout(() => st.textContent = '', 3000); return; }
+  st.textContent = '⏳ جاري السحب...';
+  try {
+    const r = await fetch(cloudURL, { method: 'GET', headers: cloudKey ? { 'X-Master-Key': cloudKey } : {} });
+    let cd = await r.json();
+    if (cd && cd.record) cd = cd.record; // JSONBin wrapper
+    if (cd && cd.stations) {
+      data = ensureTanks(cd);
+      localStorage.setItem(STORE_KEY, JSON.stringify(data));
+      const cur = document.querySelector('.section.active');
+      showSection(cur ? cur.id.replace('section-', '') : 'dashboard');
+      st.textContent = '✅ تم سحب البيانات من السحابة بنجاح';
+    } else {
+      st.textContent = '⚠️ لا توجد بيانات صالحة في السحابة';
+    }
+  } catch(e) {
+    st.textContent = '❌ فشل الاتصال بالسحابة: ' + e.message;
+  }
+  setTimeout(() => st.textContent = '', 4000);
 }
 
 async function loadServerData() {
+  // Try cloud first
+  if (cloudURL) {
+    try {
+      const r = await fetch(cloudURL, { method: 'GET', headers: cloudKey ? { 'X-Master-Key': cloudKey } : {} });
+      let cd = await r.json();
+      if (cd && cd.record) cd = cd.record;
+      if (cd && cd.stations && cd.stations.length >= 12) {
+        cd.stations = cd.stations.map((s, i) => ({ ...s, id: i + 1 }));
+        return cd;
+      }
+    } catch(e) {}
+  }
+  // Fallback to local API
   try {
     const ctrl = new AbortController();
     const id = setTimeout(() => ctrl.abort(), 3000);
@@ -3995,6 +4075,8 @@ function generateReport(type) {
 }
 /* ==== SETTINGS - STATION/TANK MANAGEMENT ==== */
 function renderSettings() {
+  document.getElementById('cloudURL').value = cloudURL || '';
+  document.getElementById('cloudKey').value = cloudKey || '';
   renderSettingsStations();
   renderFieldMgmt();
 }
