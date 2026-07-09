@@ -3168,6 +3168,7 @@ function printTankPDF(tankId) {
   if (!tank) return;
   const s = data.stations.find(st => st.id === tank.stationId);
   const pct = Math.round((tank.level / tank.capacity) * 100);
+  const barColor = pct > 60 ? '#22A32F' : pct > 25 ? '#F18904' : '#F30503';
   const logoB64 = getLogoBase64();
   const dir = currentLang === 'ar' ? 'rtl' : 'ltr';
   const html = `
@@ -3176,17 +3177,34 @@ function printTankPDF(tankId) {
         <img src="${logoB64}" alt="axisco" style="height:50px;width:auto;display:block;margin:0 auto 8px;">
         <h1 style="color:#F18904;margin:0;font-size:22px;">axisco</h1>
       </div>
-      <h2 style="color:#333;">${s ? s.name : '?'}</h2>
-      <table style="width:100%;border-collapse:collapse;margin:16px 0;">
-        <tr><td style="padding:8px;border:1px solid #ddd;font-weight:700;background:#f5f5f5;">${t('fuelType')}</td><td style="padding:8px;border:1px solid #ddd;">${tfuel(tank.name)}</td></tr>
+      <h2 style="color:#333;">${s ? s.name : '?'} - ${tfuel(tank.name)}</h2>
+      <!-- Realistic tank SVG -->
+      <svg viewBox="0 0 300 160" width="280" style="display:block;margin:16px auto;">
+        <ellipse cx="155" cy="152" rx="140" ry="16" fill="rgba(0,0,0,0.08)"/>
+        <rect x="16" y="28" width="262" height="100" rx="12" fill="#e8e8e8" stroke="#999" stroke-width="2"/>
+        <ellipse cx="28" cy="78" rx="16" ry="50" fill="#e8e8e8" stroke="#999" stroke-width="2"/>
+        <ellipse cx="272" cy="78" rx="16" ry="50" fill="#e8e8e8" stroke="#999" stroke-width="2"/>
+        <clipPath id="tankPdfClip${tank.id}">
+          <rect x="16" y="28" width="262" height="100" rx="12"/>
+          <ellipse cx="28" cy="78" rx="16" ry="50"/>
+          <ellipse cx="272" cy="78" rx="16" ry="50"/>
+        </clipPath>
+        <g clip-path="url(#tankPdfClip${tank.id})">
+          <rect x="16" y="${28 + (100 - pct) * 1}" width="280" height="${pct * 1}" fill="${barColor}" opacity="0.85"/>
+        </g>
+        <image href="${logoB64}" x="70" y="40" width="160" height="76" preserveAspectRatio="xMidYMid slice" clip-path="url(#tankPdfClip${tank.id})"/>
+        <rect x="16" y="28" width="262" height="100" rx="12" fill="none" stroke="#555" stroke-width="2.5"/>
+        <ellipse cx="28" cy="78" rx="16" ry="50" fill="none" stroke="#555" stroke-width="2.5"/>
+        <ellipse cx="272" cy="78" rx="16" ry="50" fill="none" stroke="#555" stroke-width="2.5"/>
+        <rect x="130" y="20" width="40" height="12" rx="4" fill="#999" stroke="#666" stroke-width="1.5"/>
+        <rect x="55" y="128" width="8" height="16" rx="2" fill="#888"/>
+        <rect x="237" y="128" width="8" height="16" rx="2" fill="#888"/>
+      </svg>
+      <table style="width:80%;margin:12px auto;border-collapse:collapse;">
         <tr><td style="padding:8px;border:1px solid #ddd;font-weight:700;background:#f5f5f5;">${t('capacity')}</td><td style="padding:8px;border:1px solid #ddd;">${fmtNum(tank.capacity)} L</td></tr>
         <tr><td style="padding:8px;border:1px solid #ddd;font-weight:700;background:#f5f5f5;">${t('currentLevel')}</td><td style="padding:8px;border:1px solid #ddd;">${fmtNum(tank.level)} L</td></tr>
-        <tr><td style="padding:8px;border:1px solid #ddd;font-weight:700;background:#f5f5f5;">${t('sumCol')}</td><td style="padding:8px;border:1px solid #ddd;">${pct}% ${t('liter')}</td></tr>
+        <tr><td style="padding:8px;border:1px solid #ddd;font-weight:700;background:#f5f5f5;">${t('sumCol')}</td><td style="padding:8px;border:1px solid #ddd;"><strong style="color:${barColor};font-size:18px;">${pct}%</strong></td></tr>
       </table>
-      <div style="width:100%;height:40px;background:#eee;border-radius:20px;overflow:hidden;position:relative;">
-        <div style="height:100%;width:${pct}%;background:${pct > 60 ? '#22A32F' : pct > 25 ? '#F18904' : '#F30503'};border-radius:20px;"></div>
-        <span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-weight:700;font-size:16px;color:${pct > 50 ? 'white' : '#333'};">${pct}%</span>
-      </div>
       <p style="color:#999;font-size:11px;margin-top:20px;">${fmtDate(new Date(), { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}</p>
     </div>
   `;
@@ -3208,14 +3226,28 @@ function printStationTanksPDF(stationId) {
     const barColor = pct > 60 ? '#22A32F' : pct > 25 ? '#F18904' : '#F30503';
     rows += `
       <tr>
-        <td style="padding:10px;border:1px solid #ddd;text-align:center;">${tfuel(t.name)}</td>
-        <td style="padding:10px;border:1px solid #ddd;text-align:center;">${fmtNum(t.capacity)} L</td>
-        <td style="padding:10px;border:1px solid #ddd;text-align:center;">${fmtNum(t.level)} L</td>
-        <td style="padding:10px;border:1px solid #ddd;text-align:center;">
-          <div style="width:100%;height:20px;background:#eee;border-radius:10px;overflow:hidden;position:relative;">
-            <div style="height:100%;width:${pct}%;background:${barColor};border-radius:10px;"></div>
-            <span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-weight:700;font-size:11px;color:${pct > 50 ? 'white' : '#333'};">${pct}%</span>
-          </div>
+        <td style="padding:8px;border:1px solid #ddd;text-align:center;vertical-align:middle;">${tfuel(t.name)}</td>
+        <td style="padding:8px;border:1px solid #ddd;text-align:center;vertical-align:middle;">${fmtNum(t.capacity)} L</td>
+        <td style="padding:8px;border:1px solid #ddd;text-align:center;vertical-align:middle;">${fmtNum(t.level)} L</td>
+        <td style="padding:8px;border:1px solid #ddd;text-align:center;vertical-align:middle;">
+          <svg viewBox="0 0 120 60" width="100" style="display:inline-block;vertical-align:middle;">
+            <rect x="6" y="10" width="106" height="38" rx="6" fill="#e8e8e8" stroke="#999" stroke-width="1.2"/>
+            <ellipse cx="12" cy="29" rx="7" ry="19" fill="#e8e8e8" stroke="#999" stroke-width="1.2"/>
+            <ellipse cx="108" cy="29" rx="7" ry="19" fill="#e8e8e8" stroke="#999" stroke-width="1.2"/>
+            <clipPath id="stnPdfClip${t.id}">
+              <rect x="6" y="10" width="106" height="38" rx="6"/>
+              <ellipse cx="12" cy="29" rx="7" ry="19"/>
+              <ellipse cx="108" cy="29" rx="7" ry="19"/>
+            </clipPath>
+            <g clip-path="url(#stnPdfClip${t.id})">
+              <rect x="6" y="${10 + (100 - pct) * 0.38}" width="120" height="${pct * 0.38}" fill="${barColor}" opacity="0.85"/>
+            </g>
+            <image href="${logoB64}" x="30" y="14" width="60" height="28" preserveAspectRatio="xMidYMid slice" clip-path="url(#stnPdfClip${t.id})"/>
+            <rect x="6" y="10" width="106" height="38" rx="6" fill="none" stroke="#555" stroke-width="1.5"/>
+            <ellipse cx="12" cy="29" rx="7" ry="19" fill="none" stroke="#555" stroke-width="1.5"/>
+            <ellipse cx="108" cy="29" rx="7" ry="19" fill="none" stroke="#555" stroke-width="1.5"/>
+          </svg>
+          <div style="font-weight:700;color:${barColor};font-size:14px;margin-top:4px;">${pct}%</div>
         </td>
       </tr>`;
   });
