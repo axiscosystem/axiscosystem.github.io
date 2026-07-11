@@ -161,6 +161,11 @@ body.en { direction: ltr; }
 .notif-empty { text-align:center;padding:20px;color:var(--text-muted);font-size:13px; }
 #notifBadge { display:none !important; }
 #notifBadge.show { display:flex !important; }
+@media (max-width:480px) {
+  .notif-wrapper { position:static !important; }
+  .notif-wrapper #notifPanel { position:fixed; top:50%; left:50%; inset-inline-end:auto; transform:translate(-50%,-50%); width:92vw; max-width:340px; z-index:1000; }
+  #notifBell { font-size:20px !important; padding:6px 12px !important; }
+}
 .topbar-lang {
   background: var(--bg);
   color: var(--text);
@@ -733,7 +738,7 @@ tr:hover td { background: var(--hover-bg); }
 @media (max-width: 480px) {
   .main-content { padding: 8px; }
   .topbar h1 { font-size: 18px; }
-  .topbar-left { gap: 8px; flex-wrap: wrap; }
+  .topbar-left { gap: 6px; flex-wrap: wrap; justify-content: center; }
   .tank-grid { grid-template-columns: 1fr; }
   .stat-card { padding: 16px; }
   .stat-card .stat-value { font-size: 22px; }
@@ -993,8 +998,8 @@ tr:hover td { background: var(--hover-bg); }
       <div class="topbar-left">
         <div class="notif-wrapper" style="position:relative;">
           <button class="topbar-lang" onclick="toggleNotifPanel()" id="notifBell" title="الإشعارات" style="font-size:18px;padding:4px 10px;position:relative;">🔔</button>
-          <span id="notifBadge" style="display:none;position:absolute;top:-2px;inset-inline-end:-2px;background:var(--danger);color:white;border-radius:50%;width:16px;height:16px;font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:700;border:1.5px solid white;"></span>
-          <div id="notifPanel" style="display:none;position:absolute;top:100%;inset-inline-end:0;width:300px;max-height:360px;overflow-y:auto;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.15);z-index:999;padding:8px;margin-top:4px;"></div>
+          <span id="notifBadge" style="position:absolute;top:-2px;inset-inline-end:-2px;background:var(--danger);color:white;border-radius:50%;width:18px;height:18px;font-size:10px;align-items:center;justify-content:center;font-weight:700;border:1.5px solid white;"></span>
+          <div id="notifPanel" style="display:none;position:absolute;top:100%;inset-inline-end:0;width:320px;max-width:90vw;max-height:360px;overflow-y:auto;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.15);z-index:999;padding:8px;margin-top:4px;"></div>
         </div>
         <select class="topbar-lang" id="themeSelector" onchange="setTheme(this.value)" style="font-size:11px;padding:4px 6px;cursor:pointer;max-width:70px;">
           <option value="light">☀️</option>
