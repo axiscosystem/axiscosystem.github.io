@@ -209,6 +209,8 @@ body.en { direction: ltr; }
 .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
 .btn-danger { background: var(--danger); color: white; }
 .btn-danger:hover { opacity: 0.9; }
+.btn-success { background: var(--success); color: white; }
+.btn-success:hover { opacity: 0.9; }
 /* Dashboard Layout */
 .dashboard { display: block; min-height: 100vh; }
 .sidebar {
@@ -958,6 +960,9 @@ tr:hover td { background: var(--hover-bg); }
       <a class="nav-item" data-section="analytics" onclick="showSection('analytics')">
         <span class="icon">&#9883;</span> <span data-i18n="analytics">التحليلات</span>
       </a>
+      <a class="nav-item" data-section="developer" onclick="showSection('developer')">
+        <span class="icon">&#9881;</span> <span data-i18n="developer">المطور</span>
+      </a>
       <a class="nav-item" data-section="customers" onclick="showSection('customers')">
         <span class="icon">&#9786;</span> <span data-i18n="customers">العملاء</span>
       </a>
@@ -1390,6 +1395,29 @@ tr:hover td { background: var(--hover-bg); }
       </div>
       <div id="tankLogList" style="margin-top:12px;"></div>
     </div>
+
+    <!-- Developer Section -->
+    <div class="section" id="section-developer">
+      <div class="section-header">
+        <h2 data-i18n="developer">المطور</h2>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;padding:24px;text-align:center;">
+        <img src="axisco-logo.jpeg" alt="axisco" style="width:100px;height:100px;border-radius:50%;border:3px solid var(--primary);object-fit:cover;margin-bottom:12px;">
+        <h3 style="color:var(--primary);margin:4px 0;">محمد فاصل</h3>
+        <p style="color:var(--text-muted);font-size:14px;margin:4px 0;" data-i18n="devTitle">مطور تطبيقات الويب</p>
+        <p style="font-size:14px;max-width:400px;line-height:1.6;color:var(--text);margin:12px 0;" data-i18n="devBio">مطور مستقل متخصص في بناء تطبيقات الويب المتكاملة وأنظمة إدارة الأعمال. خبرة في JavaScript, Python, وأنظمة قواعد البيانات.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:12px 0;">
+          <a href="mailto:dev@axisco.com" style="text-decoration:none;"><button class="btn btn-sm btn-primary">📧 dev@axisco.com</button></a>
+          <a href="https://wa.me/966500000000" target="_blank" style="text-decoration:none;"><button class="btn btn-sm btn-success">💬 WhatsApp</button></a>
+        </div>
+        <div style="margin-top:16px;padding:16px;background:var(--bg);border-radius:12px;width:100%;max-width:400px;">
+          <div style="display:flex;justify-content:space-between;padding:6px 0;"><span data-i18n="devVersion">الإصدار</span><span>2.0.0</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;"><span data-i18n="devTech">التقنيات المستخدمة</span><span style="font-size:12px;text-align:left;" data-i18n="devTechList">HTML, CSS, JavaScript, Firebase</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;"><span>📅</span><span>2024 - 2026</span></div>
+        </div>
+      </div>
+    </div>
+
 
   </main>
 </div>
@@ -2003,6 +2031,14 @@ const i18n = {
     // Titles
     exportTooltip: 'تصدير البيانات',
     importTooltip: 'استيراد البيانات',
+    // Developer
+    developer: 'المطور',
+    devTitle: 'مطور تطبيقات الويب',
+    devBio: 'مطور مستقل متخصص في بناء تطبيقات الويب المتكاملة وأنظمة إدارة الأعمال. خبرة في JavaScript, Python, وأنظمة قواعد البيانات.',
+    devContact: 'تواصل مع المطور',
+    devTech: 'التقنيات المستخدمة',
+    devTechList: 'HTML, CSS, JavaScript, Firebase, PWA, Web APIs',
+    devVersion: 'الإصدار',
     // Customers
     customers: 'العملاء',
     addCustomer: '+ إضافة عميل',
@@ -2393,6 +2429,14 @@ const i18n = {
     // Titles
     exportTooltip: 'Export Data',
     importTooltip: 'Import Data',
+    // Developer
+    developer: 'Developer',
+    devTitle: 'Web Application Developer',
+    devBio: 'Independent developer specializing in building full-stack web applications and business management systems. Experienced in JavaScript, Python, and database systems.',
+    devContact: 'Contact Developer',
+    devTech: 'Technologies Used',
+    devTechList: 'HTML, CSS, JavaScript, Firebase, PWA, Web APIs',
+    devVersion: 'Version',
     // Customers
     customers: 'Customers',
     addCustomer: '+ Add Customer',
