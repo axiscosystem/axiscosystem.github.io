@@ -817,10 +817,16 @@ tr:hover td { background: var(--hover-bg); }
   border-radius: 24px;
   padding: 40px 32px;
   width: 380px;
-  max-width: 90%;
+  max-width: 92%;
   box-shadow: 0 25px 60px rgba(0,0,0,0.2);
   text-align: center;
   animation: modalIn 0.3s ease-out;
+}
+@media (max-width:480px) {
+  .login-box { padding: 28px 20px; border-radius: 18px; }
+  .login-box h2 { font-size: 16px; margin-bottom: 18px; }
+  .login-box input { padding: 10px 14px; font-size: 14px; }
+  .login-page { background: var(--bg); }
 }
 .login-box h2 { font-size: 18px; color: var(--primary); margin-bottom: 24px; }
 .login-box .btn { width: 100%; margin-top: 8px; }
@@ -992,7 +998,7 @@ tr:hover td { background: var(--hover-bg); }
         <div id="searchResults" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.15);z-index:999;max-height:300px;overflow-y:auto;margin-top:4px;"></div>
       </div>
       <div>
-        <img src="axisco-logo.jpeg" alt="axisco" style="height:36px;width:auto;display:block;">
+        <img src="axisco-logo.jpeg" alt="axisco" style="height:36px;width:auto;display:block;" loading="lazy">
         <div class="date" id="currentDate" style="margin-top:4px;"></div>
       </div>
       <div class="topbar-left">
@@ -1086,6 +1092,7 @@ tr:hover td { background: var(--hover-bg); }
               <th data-i18n="price">السعر</th>
               <th data-i18n="total">الإجمالي</th>
               <th data-i18n="employee">الموظف</th>
+              <th data-i18n="customers">العميل</th>
               <th data-i18n="actions">الإجراءات</th>
             </tr>
           </thead>
@@ -1127,6 +1134,9 @@ tr:hover td { background: var(--hover-bg); }
         </div>
       </div>
       <div id="reportResult" style="margin-top:20px;"></div>
+      <div style="text-align:center;margin-top:12px;display:none;" id="reportPDFBtn">
+        <button class="btn btn-sm btn-primary" onclick="printReportPDF()" data-i18n="exportPDF">PDF</button>
+      </div>
     </div>
 
     <!-- Fuel Orders Section -->
@@ -1455,6 +1465,11 @@ tr:hover td { background: var(--hover-bg); }
       <label data-i18n="employee">الموظف</label>
       <select id="saleEmployee" style="width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;"></select>
     </div>
+    <div class="form-group">
+      <label data-i18n="customers">العميل (اختياري)</label>
+      <select id="saleCustomer" style="width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;">
+        <option value="">—</option>
+      </select>
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="closeModal('saleModal')" data-i18n="cancel">إلغاء</button>
       <button class="btn btn-primary" onclick="saveSale()" data-i18n="save">تسجيل</button>
@@ -4674,7 +4689,7 @@ function renderSales() {
   sorted.forEach(s => {
     const tr = document.createElement('tr');
     const station = data.stations.find(st => st.id === s.stationId);
-    tr.innerHTML = `
+    td.innerHTML = `
       <td>${fmtDateTime(s.date, { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}</td>
       <td><strong>${station ? station.name : '-'}</strong></td>
       <td>${tfuel(s.fuelType)}</td>
@@ -4682,6 +4697,7 @@ function renderSales() {
       <td>${fmtNum(s.price, 2)} ${t('currency')}</td>
       <td><strong>${fmtNum(s.total, 2)} ${t('currency')}</strong></td>
       <td>${s.employee}</td>
+      <td>${s.customerId ? (data.customers.find(c=>c.id===s.customerId)||{}).name || '' : ''}</td>
       <td><button class="btn btn-sm btn-outline" onclick="printInvoice(${s.id},'sale')">${t('printInvoice')}</button></td>
     `;
     tbody.appendChild(tr);
@@ -4715,6 +4731,13 @@ function openSaleModal() {
     opt.textContent = e.name;
     empSelect.appendChild(opt);
   });
+  const custSelect = document.getElementById('saleCustomer');
+  if (custSelect) {
+    custSelect.innerHTML = '<option value="">— ' + t('customers') + ' —</option>';
+    (data.customers || []).forEach(c => {
+      const opt = document.createElement('option'); opt.value = c.id; opt.textContent = c.name; custSelect.appendChild(opt);
+    });
+  }
   setNumInput(document.getElementById('saleQuantity'), '');
   openModal('saleModal');
 }
@@ -4738,7 +4761,8 @@ function saveSale() {
     quantity,
     price,
     total: quantity * price,
-    employee
+    employee,
+    customerId: parseInt(document.getElementById('saleCustomer')?.value) || null
   });
   data.tanks.filter(t => t.stationId === stationId && t.fuelType === fuelType).forEach(tank => {
     tank.level = Math.max(0, tank.level - quantity);
@@ -5234,6 +5258,42 @@ function generateReport(type) {
     </div>
   `;
   showToast(t('reportGenerated'), 'success');
+  // Store current report data and show PDF button
+  window._reportData = { type, filtered, total, liters, breakdown, curr };
+  const pdfBtn = document.getElementById('reportPDFBtn');
+  if (pdfBtn) pdfBtn.style.display = 'block';
+}
+function printReportPDF() {
+  const rd = window._reportData;
+  if (!rd) return;
+  const w = window.open('', '_blank');
+  if (!w) return;
+  const dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+  w.document.write(`<html><head><meta charset="UTF-8"><title>axisco - ${t('reports')}</title><style>
+    body{font-family:Segoe UI,Tahoma,sans-serif;padding:20px;direction:${dir};}
+    h2{color:#F18904;text-align:center;margin-bottom:8px;}
+    .meta{text-align:center;color:#666;font-size:13px;margin-bottom:20px;}
+    table{width:100%;border-collapse:collapse;margin:16px 0;}
+    th,td{border:1px solid #ccc;padding:8px 12px;text-align:center;}
+    th{background:#f5f5f5;}
+    .stats{display:flex;justify-content:center;gap:24px;margin:16px 0;}
+    .stat{text-align:center;padding:12px 20px;background:#f9f9f9;border-radius:8px;}
+    .stat .num{font-size:20px;font-weight:700;color:#F18904;}
+    .stat .lbl{font-size:13px;color:#666;}
+    .footer{text-align:center;margin-top:24px;font-size:12px;color:#999;border-top:1px solid #eee;padding-top:12px;}
+  </style></head><body>
+    <h2>axisco</h2>
+    <div class="meta">${t(rd.type)} ${t('reports')} — ${new Date().toLocaleDateString()}</div>
+    <div class="stats">
+      <div class="stat"><div class="num">${rd.filtered.length}</div><div class="lbl">${t('transactions')}</div></div>
+      <div class="stat"><div class="num">${fmtNum(rd.total, 2)} ${rd.curr}</div><div class="lbl">${t('totalSales')}</div></div>
+      <div class="stat"><div class="num">${fmtNum(rd.liters, 1)}</div><div class="lbl">${t('totalLiters')}</div></div>
+    </div>
+    <table><tr><th>${t('fuelType')}</th><th>${t('quantity')}</th></tr>${rd.breakdown || '<tr><td colspan="2">' + t('noData') + '</td></tr>'}</table>
+    <div class="footer">${t('invoiceFooter')}</div>
+    <script>window.print();<\/script>
+  </body></html>`);
+  w.document.close();
 }
 // ====== CUSTOMERS ======
 function renderCustomers() {
